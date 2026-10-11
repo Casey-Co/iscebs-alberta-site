@@ -68,7 +68,14 @@
     const stack = [...(doc.nodes || [])];
     while (stack.length) {
       const n = stack.shift();
-      const src = n.imageData?.image?.src || n.galleryData?.items?.[0]?.image?.media?.src;
+      const img = n.imageData?.image;
+      const src = img?.src || n.galleryData?.items?.[0]?.image?.media?.src;
+      if (src?.id && img?.width && img?.height && n.imageData?.crop) {
+        // Respect a crop made in the Wix editor (crop values are fractions of the original).
+        const c = n.imageData.crop, W = img.width, H = img.height;
+        const px = v => Math.max(0, Math.round(v));
+        return `https://static.wixstatic.com/media/${src.id}/v1/crop/x_${px(c.x * W)},y_${px(c.y * H)},w_${px(c.width * W)},h_${px(c.height * H)}/${src.id}`;
+      }
       if (src) return src.url || src.id || '';
       if (n.nodes) stack.unshift(...n.nodes);
     }

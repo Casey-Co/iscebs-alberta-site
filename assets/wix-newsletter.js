@@ -194,7 +194,6 @@
 
     // Member spotlight (any member; photo from the Spotlight Photo field)
     const spot = person(issue, 'spotlight');
-    if (preview) console.info('Newsletter preview · Spotlight Photo value from Wix:', issue.spotlightPhoto, '→ image used:', spot?.photo);
     const story = rich(f('spotlightStory'));
     if (spot && story) {
       contents.push(['spotlight', `Meet ${spot.first}`]);
@@ -239,37 +238,11 @@
         <section class="issue-closing"><div class="eyebrow">HELP SHAPE THE NEXT ISSUE</div><h2>This is your chapter.</h2><p>A member achievement, a useful idea or someone we should spotlight—we’d like to hear it.</p><a class="button" href="mailto:${CONTACT}?subject=Alberta%20Chapter%20Newsletter">Send us a story <span aria-hidden="true">↗</span></a><a class="text-link" href="newsletter.html">Back to newsletters →</a></section>
       </div>`;
     if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
-    if (preview) showPhotoCheck(issue, spot);
   }
 
   function issueMessage(heading, body) {
     issueRoot.innerHTML = `<div class="wrap issue-breadcrumb"><a href="newsletter.html">← All newsletters</a></div>
       <section class="wrap issue-hero"><div class="eyebrow">ALBERTA CHAPTER NEWSLETTER</div><h1>${heading}</h1><p>${body}</p></section>`;
-  }
-
-  // Preview only: show what Wix sent for the spotlight photo, to help fix photo problems.
-  function showPhotoCheck(issue, spot) {
-    const box = document.querySelector('#spotlight .prose');
-    if (!box) return;
-    const raw = issue.spotlightPhoto ?? issue.spotlightphoto;
-    const fieldsWithPhoto = Object.keys(issue).filter(k => /photo|image/i.test(k));
-    const note = document.createElement('div');
-    note.className = 'issue-callout preview-check';
-    const report = loaded => {
-      note.innerHTML = `<h3>Preview check · spotlight photo</h3>
-        <p><strong>Photo fields Wix sent:</strong> ${esc(fieldsWithPhoto.join(', ') || 'none')}</p>
-        <p><strong>Spotlight Photo value:</strong> <code>${esc(raw === undefined ? '(missing)' : JSON.stringify(raw))}</code></p>
-        <p><strong>Image address used:</strong> <code>${esc(spot?.photo || '(none)')}</code></p>
-        <p><strong>Result:</strong> ${loaded ? 'loaded ✓' : 'did not load ✗'}</p>
-        <p class="small-note">Only shown in preview. Please send a screenshot of this box if the photo is missing.</p>`;
-    };
-    report(false);
-    box.append(note);
-    const img = document.querySelector('[data-spotlight-photo]');
-    if (img) {
-      if (img.complete && img.naturalWidth) report(true);
-      else img.addEventListener('load', () => report(true));
-    }
   }
 
   // ---------- Archive page ----------
