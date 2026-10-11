@@ -149,7 +149,7 @@
     if (pres && presMessage) {
       contents.push(['president', `From ${pres.first}`]);
       sections.push(`<section id="president" class="issue-section president-message"><div>
-        ${pres.photo ? `<img class="issue-president-photo" src="${esc(pres.photo)}" alt="${esc(pres.name)}" width="160" height="211" onerror="this.remove()">` : ''}
+        ${pres.photo ? `<img class="issue-president-photo" src="${esc(pres.photo)}" alt="${esc(pres.name)}" width="160" height="211" onerror="if(this.src.includes('/v1/crop/')){this.src=this.src.split('/v1/crop/')[0]}else{this.remove()}">` : ''}
         <p class="eyebrow">FROM THE PRESIDENT</p>
         <h2>${esc(f('presidentHeading') || `A welcome from ${pres.first}`)}</h2>
         <p class="issue-byline">${esc(pres.name)}${f('presidentRole') ? `<br>${text(f('presidentRole'))}` : ''}</p>
@@ -198,7 +198,7 @@
     if (spot && story) {
       contents.push(['spotlight', `Meet ${spot.first}`]);
       sections.push(`<section id="spotlight" class="issue-section board-spotlight"><div>
-        ${spot.photo ? `<img src="${esc(spot.photo)}" alt="${esc(spot.name)}" width="372" height="491" data-spotlight-photo onerror="this.dataset.failed=1;this.remove()">` : ''}
+        ${spot.photo ? `<img src="${esc(spot.photo)}" alt="${esc(spot.name)}" width="372" height="491" data-spotlight-photo onerror="if(this.src.includes('/v1/crop/')){this.src=this.src.split('/v1/crop/')[0]}else{this.remove()}">` : ''}
         <p class="eyebrow">MEMBER SPOTLIGHT</p>
         <h2>Meet ${esc(spot.name)}</h2>
         ${spot.role ? `<p>${esc(spot.role)}</p>` : ''}
