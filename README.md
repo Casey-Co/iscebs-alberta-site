@@ -7,7 +7,7 @@ Static HTML/CSS/JavaScript site. No build step, no server, no packages to instal
 
 | Content | Edited in | Notes |
 |---|---|---|
-| Upcoming events, registration | **Wix → Events** (headless project) | Every published upcoming event appears on `events.html` automatically. |
+| Upcoming events, registration | **Wix → Events** (headless project) | Every published upcoming event appears on `events.html` automatically. RSVP events show an on-page form built from the event's Wix registration form; responses go into the Wix guest list and Wix sends the confirmation email. Paid ticketing isn't wired up yet. |
 | Board members (About page) | **Wix → CMS → Board Members** collection | Sorted by *Display Order*. Photos uploaded in Wix; if none, `assets/board/<first-last>.jpg` is used. |
 | Everything else (page text, layout, design) | The HTML files in this repository | Edit in GitHub (pencil icon) and commit; the site republishes in a minute or two. |
 

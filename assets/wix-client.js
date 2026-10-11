@@ -12,7 +12,13 @@
 
   async function request(path, options = {}) {
     const response = await fetch(API + path, { ...options, signal: AbortSignal.timeout(15000) });
-    if (!response.ok) throw new Error('Wix request failed: ' + response.status);
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      const err = new Error('Wix request failed: ' + response.status);
+      err.status = response.status;
+      err.code = body?.details?.applicationError?.code || '';
+      throw err;
+    }
     return response.json();
   }
 

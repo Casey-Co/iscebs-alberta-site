@@ -25,3 +25,14 @@
 .calendar-links{display:flex;flex-wrap:wrap;gap:18px;margin-top:6px}
 .featured-event+.featured-event{margin-top:48px}
 .featured-event-empty{border-top:1px solid #aab7b8;border-bottom:1px solid #aab7b8}.featured-event-empty p{max-width:620px;line-height:1.8}
+
+.rsvp-form{display:grid;gap:16px;margin-top:8px;max-width:520px}
+.rsvp-field{display:grid;gap:6px;font-size:.9rem;border:0;padding:0;margin:0}
+.rsvp-field>span,.rsvp-field legend{font-weight:600;font-size:.85rem;padding:0}
+.rsvp-field input:not([type=radio]):not([type=checkbox]),.rsvp-field select,.rsvp-field textarea{font:inherit;padding:11px 12px;border:1px solid #aab7b8;border-radius:2px;background:#fff;color:inherit;width:100%;box-sizing:border-box}
+.rsvp-field input:focus,.rsvp-field select:focus,.rsvp-field textarea:focus{outline:2px solid var(--navy,#142f40);outline-offset:1px}
+.rsvp-choice label{display:flex;gap:10px;align-items:center;font-weight:400;padding:3px 0}
+.rsvp-choice.invalid legend{color:#a3261b}
+.rsvp-error{color:#a3261b;font-size:.9rem;margin:0}
+.rsvp-form button[type=submit]{justify-self:start;cursor:pointer}
+.rsvp-form button[disabled]{opacity:.6;cursor:wait}
