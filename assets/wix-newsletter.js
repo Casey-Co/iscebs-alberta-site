@@ -112,7 +112,7 @@
       photo: imageUrl(field(issue, prefix + 'Photo')),
       role: field(issue, prefix + 'Role'),
       work: field(issue, prefix + 'Work'),
-      linkedin: safeLink(field(issue, prefix + 'LinkedIn', prefix + 'Linkedin', prefix + 'LinkedInUrl'))
+      linkedin: W.webLink(field(issue, prefix + 'LinkedIn', prefix + 'Linkedin', prefix + 'LinkedInUrl', prefix + 'LinkedinUrl', prefix + 'Link'))
     };
   }
 

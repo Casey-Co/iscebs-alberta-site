@@ -93,6 +93,29 @@
     return safeLink(value);
   }
 
+  // Turn whatever an editor typed into a usable web link:
+  // "linkedin.com/in/x", "www.x.com", "http://..." or a Rich content field with a link in it.
+  function webLink(value) {
+    if (!value) return '';
+    if (typeof value === 'object' && Array.isArray(value.nodes)) {
+      const stack = [...value.nodes];
+      let text = '';
+      while (stack.length) {
+        const n = stack.shift();
+        const url = n.textData?.decorations?.find(d => d.type === 'LINK')?.linkData?.link?.url || n.linkPreviewData?.link?.url;
+        if (url) { value = url; break; }
+        if (n.textData?.text) text += n.textData.text;
+        if (n.nodes) stack.unshift(...n.nodes);
+      }
+      if (typeof value === 'object') value = text;
+    }
+    let v = String(value).trim();
+    if (!v || /\s/.test(v)) return '';
+    if (/^http:\/\//i.test(v)) v = 'https://' + v.slice(7);
+    if (!/^https:\/\//i.test(v)) v = 'https://' + v.replace(/^\/+/, '');
+    try { const u = new URL(v); return u.hostname.includes('.') ? u.href : ''; } catch { return ''; }
+  }
+
   // Minimal Wix rich-text renderer: paragraphs, headings and lists, as plain text.
   function richText(rich) {
     const text = node => (node.nodes || []).map(n =>
@@ -109,5 +132,5 @@
     return (rich?.nodes || []).map(block).join('');
   }
 
-  window.WixSite = { settings, configured, post, queryCollection, field, esc, safeLink, imageUrl, richText };
+  window.WixSite = { settings, configured, post, queryCollection, field, esc, safeLink, webLink, imageUrl, richText };
 })();
