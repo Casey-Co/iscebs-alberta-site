@@ -63,10 +63,23 @@
 
   const safeLink = url => (/^https:\/\//i.test(String(url || '')) ? String(url) : '');
 
+  // First picture inside a Wix Rich content value (used when a photo field is Rich content).
+  function firstRichImage(doc) {
+    const stack = [...(doc.nodes || [])];
+    while (stack.length) {
+      const n = stack.shift();
+      const src = n.imageData?.image?.src || n.galleryData?.items?.[0]?.image?.media?.src;
+      if (src) return src.url || src.id || '';
+      if (n.nodes) stack.unshift(...n.nodes);
+    }
+    return '';
+  }
+
   // Wix image value (wix:image://v1/<id>/<name>#...) -> public URL.
   function imageUrl(value) {
     if (!value) return '';
-    if (typeof value === 'object') value = value.url || value.src || value.image || value.id || '';
+    if (typeof value === 'object' && Array.isArray(value.nodes)) value = firstRichImage(value); // Rich content field
+    if (typeof value === 'object' && value) value = value.url || value.src || value.image || value.id || '';
     if (/^[\w-]+~mv2\.\w+$/.test(String(value))) return `https://static.wixstatic.com/media/${value}`;
     const m = String(value).match(/^(?:wix:)?image:\/\/v1\/([^/#?]+)/);
     if (m) return `https://static.wixstatic.com/media/${m[1]}`;
