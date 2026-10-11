@@ -6,6 +6,8 @@
   - Published: tick to show the issue on the website. Unticked issues can be
     previewed with newsletter-issue.html?issue=<slug>&preview=1
   - Each section only appears if it has content, so leave a section blank to skip it.
+  - Education ahead: lists upcoming Wix events automatically with Register links.
+    The issue only sets the section's label, heading and intro.
   - President and Spotlight: type the board member's name; their photo,
     credentials and LinkedIn come from the Board Members collection automatically.
     (Fill the photo/role fields only to override.)
@@ -107,8 +109,29 @@
     };
   }
 
+  // Upcoming events from Wix Events (for the "Education ahead" section).
+  async function loadUpcoming() {
+    try {
+      const { events = [] } = await W.post('/events/v3/events/query', {
+        fields: ['DETAILS', 'REGISTRATION'],
+        query: {
+          filter: { status: { $in: ['UPCOMING', 'STARTED'] } },
+          sort: [{ fieldName: 'dateAndTimeSettings.startDate', order: 'ASC' }],
+          paging: { limit: 6, offset: 0 }
+        }
+      });
+      return events;
+    } catch { return []; }
+  }
+  function eventWhen(e) {
+    const s = e.dateAndTimeSettings || {};
+    if (s.dateAndTimeTbd || !s.startDate) return s.dateAndTimeTbdMessage || 'Date to be announced';
+    const fmt = o => new Intl.DateTimeFormat('en-CA', { timeZone: s.timeZoneId || 'America/Edmonton', ...o }).format(new Date(s.startDate));
+    return `${fmt({ weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })} · ${fmt({ hour: 'numeric', minute: '2-digit', timeZoneName: 'short' })}`;
+  }
+
   // ---------- Issue page ----------
-  function renderIssue(issue, board) {
+  function renderIssue(issue, board, upcoming = []) {
     const f = (...k) => field(issue, ...k);
     const when = monthYear(issue.date);
     const sections = [], contents = [];
@@ -143,20 +166,24 @@
       </section>`);
     }
 
-    // Education ahead
-    const items = [1, 2, 3].map(n => ({
-      n, title: f(`education${n}Title`), body: f(`education${n}Text`), details: f(`education${n}Details`)
-    })).filter(i => i.title);
-    if (f('educationHeading') || items.length) {
-      contents.push(['education', 'Education ahead']);
-      sections.push(`<section id="education" class="issue-section">
-        ${f('educationPeriod') ? `<div class="eyebrow">${esc(f('educationPeriod'))}</div>` : ''}
-        <h2>${esc(f('educationHeading') || 'What’s on the horizon?')}</h2>
-        ${f('educationIntro') ? `<p class="issue-lead">${text(f('educationIntro'))}</p>` : ''}
-        ${items.length ? `<div class="education-list">${items.map((i, idx) => `<article><span>${String(idx + 1).padStart(2, '0')}</span><div><h3>${esc(i.title)}</h3>${i.body ? `<p>${text(i.body)}</p>` : ''}</div>${i.details ? `<small>${esc(i.details)}</small>` : ''}</article>`).join('')}</div>` : ''}
-        <p>Have a topic or speaker in mind? Email <a href="mailto:${CONTACT}">${CONTACT}</a>. Confirmed sessions and registration links will appear on our <a href="events.html">Events page</a>.</p>
-      </section>`);
-    }
+    // Education ahead: live upcoming events from Wix Events, each linking to registration.
+    contents.push(['education', 'Education ahead']);
+    const eventItems = upcoming.map((e, idx) => {
+      const r = e.registration || {};
+      const open = ['OPEN_RSVP', 'OPEN_RSVP_WAITLIST_ONLY', 'OPEN_TICKETS', 'OPEN_EXTERNAL'].includes(r.status) && !r.registrationPaused && !r.registrationDisabled;
+      const label = r.status === 'OPEN_TICKETS' ? 'Get tickets' : r.status === 'OPEN_RSVP_WAITLIST_ONLY' ? 'Join the waitlist' : 'Register';
+      const link = open ? `events.html?register=${encodeURIComponent(e.id)}#event-${encodeURIComponent(e.id)}` : `events.html#event-${encodeURIComponent(e.id)}`;
+      return `<article><span>${String(idx + 1).padStart(2, '0')}</span><div><h3>${esc(e.title)}</h3>${e.shortDescription ? `<p>${esc(e.shortDescription)}</p>` : ''}
+        <a class="text-link" href="${link}">${open ? label : 'Event details'} <span aria-hidden="true">→</span></a></div>
+        <small>${esc(eventWhen(e))}</small></article>`;
+    });
+    sections.push(`<section id="education" class="issue-section">
+      ${f('educationPeriod') ? `<div class="eyebrow">${esc(f('educationPeriod'))}</div>` : ''}
+      <h2>${esc(f('educationHeading') || 'What’s on the horizon?')}</h2>
+      ${f('educationIntro') ? `<p class="issue-lead">${text(f('educationIntro'))}</p>` : ''}
+      ${eventItems.length ? `<div class="education-list">${eventItems.join('')}</div>` : '<p class="issue-lead">New education sessions will be announced soon. Watch our <a href="events.html">Events page</a>.</p>'}
+      <p>Have a topic or speaker in mind? Email <a href="mailto:${CONTACT}">${CONTACT}</a>. See every upcoming session on our <a href="events.html">Events page</a>.</p>
+    </section>`);
 
     // Society connection
     if (f('societyHeading') || f('webinarsText')) {
@@ -236,12 +263,12 @@
   }
 
   if (issueRoot) {
-    Promise.all([loadIssues(), loadBoard()]).then(([issues, board]) => {
+    Promise.all([loadIssues(), loadBoard(), loadUpcoming()]).then(([issues, board, upcoming]) => {
       const wanted = params.get('issue');
       const visible = issues.filter(i => preview || isPublished(i));
       const issue = wanted ? visible.find(i => i.slug === wanted || i._id === wanted) : visible[0];
       if (!issue) { issueMessage('Issue not found', 'This issue isn’t available. <a href="newsletter.html">See all newsletters</a>.'); return; }
-      renderIssue(issue, board);
+      renderIssue(issue, board, upcoming);
     }).catch(err => {
       console.warn('Newsletter failed to load', err);
       issueMessage('We couldn’t load this issue', `Please refresh the page, or email <a href="mailto:${CONTACT}">${CONTACT}</a>.`);

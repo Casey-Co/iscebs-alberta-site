@@ -58,7 +58,7 @@
   function render(event) {
     const d = dateParts(event);
     const kind = event.location?.type === 'ONLINE' ? 'ONLINE EVENT' : 'CHAPTER EVENT';
-    return `<section class="wrap featured-event">
+    return `<section class="wrap featured-event" id="event-${esc(event.id)}">
       <div class="event-poster">
         <div class="eyebrow">ALBERTA CHAPTER · ${kind}</div>
         <h2>${esc(event.title)}</h2>
@@ -383,5 +383,12 @@
     list.forEach(e => events.set(e.id, e));
     root.innerHTML = list.length ? list.map(render).join('') : none;
     root.dataset.source = 'wix';
+    // Arriving from a link like events.html?register=<id>: go to that event and open its form.
+    const want = new URLSearchParams(location.search).get('register') || (location.hash.startsWith('#event-') ? location.hash.slice(7) : '');
+    if (want) {
+      const card = document.getElementById('event-' + want);
+      card?.scrollIntoView({ block: 'start' });
+      if (new URLSearchParams(location.search).get('register')) card?.querySelector('[data-open]')?.click();
+    }
   }).catch(err => { console.warn('Events: showing built-in copy.', err); fallback(); });
 })();
