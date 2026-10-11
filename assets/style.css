@@ -72,4 +72,4 @@ div.past-year .past-list{margin-bottom:0}details.past-year{border-top:0}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
 .purchase-notice{background:var(--sage);padding:18px 22px;margin-top:24px;line-height:1.6}
 .registration-panel .ticket-row:first-child{border-top:0}
-.page-intro.label-only{padding-bottom:0}.page-intro.label-only+.section{padding-top:36px}
+.section.page-top{padding-top:74px;padding-bottom:0}.section.page-top+.section{padding-top:64px}
