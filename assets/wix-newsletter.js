@@ -35,10 +35,24 @@
     const d = new Date(String(raw).length === 10 ? raw + 'T12:00:00' : raw);
     return isNaN(d) ? null : d;
   }
-  const monthYear = d => d ? new Intl.DateTimeFormat('en-CA', { month: 'long', year: 'numeric' }).format(d) : '';
+  // Wix stores dates as UTC; read them in UTC so 1 February never shows as January.
+  const monthYear = d => d ? new Intl.DateTimeFormat('en-CA', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(d) : '';
   const issueNo = n => (n || n === 0) ? 'Issue ' + String(n).padStart(2, '0') : '';
   const isPublished = i => i.published === true || i.published === 'true';
-  const issueUrl = i => `newsletter-issue.html?issue=${encodeURIComponent(i.slug || i._id)}`;
+  // Slug may be stored as text or (if Wix imported it as a date) as a date: normalise to text.
+  function slugText(v) {
+    if (!v) return '';
+    if (typeof v === 'object' || /^\d{4}-\d{2}-\d{2}T/.test(String(v))) {
+      const d = dateOf(v);
+      return d ? d.toISOString().slice(0, 7) : '';
+    }
+    return String(v).trim();
+  }
+  const ym = d => d ? d.toISOString().slice(0, 7) : '';
+  // An issue can be found by its slug, its issue date (YYYY-MM) or its issue number.
+  const issueKeys = i => [i.slug, ym(i.date), i.number !== '' && i.number != null ? String(i.number) : '', i._id]
+    .filter(Boolean).map(k => String(k).trim().toLowerCase());
+  const issueUrl = i => `newsletter-issue.html?issue=${encodeURIComponent(i.slug || ym(i.date) || i._id)}`;
 
   // Rich text from Wix: HTML (Rich text field), Ricos JSON (Rich content field) or plain text.
   const ALLOWED = new Set(['P', 'BR', 'STRONG', 'B', 'EM', 'I', 'U', 'A', 'UL', 'OL', 'LI', 'H3', 'H4', 'BLOCKQUOTE', 'SPAN']);
@@ -81,7 +95,7 @@
     const rows = await W.queryCollection(id, [{ fieldName: 'issueDate', order: 'DESC' }]);
     return rows.map(r => ({
       ...r,
-      slug: field(r, 'slug'),
+      slug: slugText(field(r, 'slug')),
       date: dateOf(field(r, 'issueDate', 'date')),
       number: field(r, 'issueNumber', 'number')
     })).sort((a, b) => (b.date || 0) - (a.date || 0));
@@ -266,7 +280,9 @@
     Promise.all([loadIssues(), loadBoard(), loadUpcoming()]).then(([issues, board, upcoming]) => {
       const wanted = params.get('issue');
       const visible = issues.filter(i => preview || isPublished(i));
-      const issue = wanted ? visible.find(i => i.slug === wanted || i._id === wanted) : visible[0];
+      const key = (wanted || '').trim().toLowerCase();
+      const issue = key ? visible.find(i => issueKeys(i).includes(key)) : visible[0];
+      if (!issue) console.warn('Newsletter: no issue matches', key, issues.map(i => ({ keys: issueKeys(i), published: i.published })));
       if (!issue) { issueMessage('Issue not found', 'This issue isn’t available. <a href="newsletter.html">See all newsletters</a>.'); return; }
       renderIssue(issue, board, upcoming);
     }).catch(err => {
