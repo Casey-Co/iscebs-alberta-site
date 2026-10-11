@@ -8,9 +8,11 @@
   - Each section only appears if it has content, so leave a section blank to skip it.
   - Education ahead: lists upcoming Wix events automatically with Register links.
     The issue only sets the section's label, heading and intro.
-  - President and Spotlight: type the board member's name; their photo,
-    credentials and LinkedIn come from the Board Members collection automatically.
-    (Fill the photo/role fields only to override.)
+  - President: type the board member's name; their photo, credentials and
+    LinkedIn come from the Board Members collection automatically.
+  - Member spotlight: any member. Fill Spotlight Name, Spotlight Photo (image),
+    Spotlight Role, Spotlight Work and Spotlight LinkedIn. If the person is on
+    the board, blank fields are filled from Board Members.
 
   Pages: newsletter.html (latest issue + archive) and newsletter-issue.html (one issue).
 */
@@ -199,14 +201,14 @@
       <p>Have a topic or speaker in mind? Email <a href="mailto:${CONTACT}">${CONTACT}</a>. See every upcoming session on our <a href="events.html">Events page</a>.</p>
     </section>`);
 
-    // Board member spotlight
+    // Member spotlight (any member; photo from the Spotlight Photo field)
     const spot = person(issue, 'spotlight', board);
     const story = rich(f('spotlightStory'));
     if (spot && story) {
       contents.push(['spotlight', `Meet ${spot.first}`]);
       sections.push(`<section id="spotlight" class="issue-section board-spotlight"><div>
         <img src="${esc(spot.photo)}" alt="${esc(spot.name)}" width="372" height="491" loading="lazy" onerror="this.remove()">
-        <p class="eyebrow">BOARD MEMBER SPOTLIGHT</p>
+        <p class="eyebrow">MEMBER SPOTLIGHT</p>
         <h2>Meet ${esc(spot.name)}</h2>
         ${spot.role ? `<p>${esc(spot.role)}</p>` : ''}
         ${spot.work ? `<p class="small-note">${text(spot.work)}</p>` : ''}
