@@ -185,6 +185,21 @@
       <p>Have a topic or speaker in mind? Email <a href="mailto:${CONTACT}">${CONTACT}</a>. See every upcoming session on our <a href="events.html">Events page</a>.</p>
     </section>`);
 
+    // Board member spotlight
+    const spot = person(issue, 'spotlight', board);
+    const story = rich(f('spotlightStory'));
+    if (spot && story) {
+      contents.push(['spotlight', `Meet ${spot.first}`]);
+      sections.push(`<section id="spotlight" class="issue-section board-spotlight"><div>
+        <img src="${esc(spot.photo)}" alt="${esc(spot.name)}" width="372" height="491" loading="lazy" onerror="this.remove()">
+        <p class="eyebrow">BOARD MEMBER SPOTLIGHT</p>
+        <h2>Meet ${esc(spot.name)}</h2>
+        ${spot.role ? `<p>${esc(spot.role)}</p>` : ''}
+        ${spot.work ? `<p class="small-note">${text(spot.work)}</p>` : ''}
+        ${spot.linkedin ? `<a class="text-link" href="${esc(spot.linkedin)}" target="_blank" rel="noopener noreferrer">Connect with ${esc(spot.first)} <span aria-hidden="true">↗</span></a>` : ''}
+      </div><div class="prose">${f('spotlightHeading') ? `<h3>${esc(f('spotlightHeading'))}</h3>` : ''}${story}</div></section>`);
+    }
+
     // Society connection
     if (f('societyHeading') || f('webinarsText')) {
       contents.push(['society', 'Society connection']);
@@ -199,21 +214,6 @@
         ${f('webinarsText') ? `<div class="issue-callout"><h3>${esc(f('webinarsHeading') || 'Canadian webinars')}</h3>${rich(f('webinarsText'))}<a class="text-link" href="https://www.iscebs.org/home/education---resources/webcasts" target="_blank" rel="noopener noreferrer">Browse Society webcasts ↗</a></div>` : ''}
         <p class="small-note">Some resources require Society membership and sign-in.</p>
       </div></section>`);
-    }
-
-    // Board member spotlight
-    const spot = person(issue, 'spotlight', board);
-    const story = rich(f('spotlightStory'));
-    if (spot && story) {
-      contents.push(['spotlight', `Meet ${spot.first}`]);
-      sections.push(`<section id="spotlight" class="issue-section board-spotlight"><div>
-        <img src="${esc(spot.photo)}" alt="${esc(spot.name)}" width="372" height="491" loading="lazy" onerror="this.remove()">
-        <p class="eyebrow">BOARD MEMBER SPOTLIGHT</p>
-        <h2>Meet ${esc(spot.name)}</h2>
-        ${spot.role ? `<p>${esc(spot.role)}</p>` : ''}
-        ${spot.work ? `<p class="small-note">${text(spot.work)}</p>` : ''}
-        ${spot.linkedin ? `<a class="text-link" href="${esc(spot.linkedin)}" target="_blank" rel="noopener noreferrer">Connect with ${esc(spot.first)} <span aria-hidden="true">↗</span></a>` : ''}
-      </div><div class="prose">${f('spotlightHeading') ? `<h3>${esc(f('spotlightHeading'))}</h3>` : ''}${story}</div></section>`);
     }
 
     const title = f('title') || 'Chapter newsletter';
