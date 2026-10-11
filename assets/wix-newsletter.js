@@ -8,11 +8,10 @@
   - Each section only appears if it has content, so leave a section blank to skip it.
   - Education ahead: lists upcoming Wix events automatically with Register links.
     The issue only sets the section's label, heading and intro.
-  - President: type the board member's name (must match Board Members exactly);
-    their photo comes from Board Members. Optional President Photo field overrides it.
-  - Member spotlight: any member. Fill Spotlight Name, Spotlight Photo (image),
-    Spotlight Role, Spotlight Work and Spotlight LinkedIn. If the person is on
-    the board, blank fields are filled from Board Members.
+  - President: President Name, President Role and President Photo (picture in a
+    Rich content field). Everything comes from the issue itself.
+  - Member spotlight: Spotlight Name, Spotlight Photo, Spotlight Role,
+    Spotlight Work and Spotlight LinkedIn, all from the issue itself.
 
   Pages: newsletter.html (latest issue + archive) and newsletter-issue.html (one issue).
 */
@@ -103,26 +102,17 @@
     })).sort((a, b) => (b.date || 0) - (a.date || 0));
   }
 
-  async function loadBoard() {
-    const id = settings.COLLECTIONS?.boardMembers;
-    if (!id) return [];
-    try { return await W.queryCollection(id); } catch { return []; }
-  }
-
-  // Person details: from the issue fields first, then the Board Members collection.
-  function person(issue, prefix, board) {
+  // President / spotlight details: entirely from this issue's own fields.
+  function person(issue, prefix) {
     const name = field(issue, prefix + 'Name');
     if (!name) return null;
-    const b = board.find(m => slugify(field(m, 'title', 'name')) === slugify(name)) || {};
-    const boardWork = [field(b, 'jobTitle', 'job_title'), field(b, 'company')].filter(Boolean).join('\n');
     return {
       name,
       first: firstName(name),
-      // Issue photo first, then Board Members photo, then the board photo stored with the site (board members only).
-      photo: imageUrl(field(issue, prefix + 'Photo')) || imageUrl(field(b, 'photo', 'image')) || (b.title ? `assets/board/${slugify(name)}.jpg` : ''),
-      role: field(issue, prefix + 'Role') || [field(b, 'credentials'), field(b, 'role')].filter(Boolean).join(' · '),
-      work: field(issue, prefix + 'Work') || boardWork,
-      linkedin: safeLink(field(issue, prefix + 'LinkedIn', prefix + 'Linkedin', prefix + 'LinkedInUrl') || field(b, 'linkedIn', 'linkedin'))
+      photo: imageUrl(field(issue, prefix + 'Photo')),
+      role: field(issue, prefix + 'Role'),
+      work: field(issue, prefix + 'Work'),
+      linkedin: safeLink(field(issue, prefix + 'LinkedIn', prefix + 'Linkedin', prefix + 'LinkedInUrl'))
     };
   }
 
@@ -148,13 +138,13 @@
   }
 
   // ---------- Issue page ----------
-  function renderIssue(issue, board, upcoming = []) {
+  function renderIssue(issue, upcoming = []) {
     const f = (...k) => field(issue, ...k);
     const when = monthYear(issue.date);
     const sections = [], contents = [];
 
     // From the President
-    const pres = person(issue, 'president', board);
+    const pres = person(issue, 'president');
     const presMessage = rich(f('presidentMessage'));
     if (pres && presMessage) {
       contents.push(['president', `From ${pres.first}`]);
@@ -203,7 +193,7 @@
     </section>`);
 
     // Member spotlight (any member; photo from the Spotlight Photo field)
-    const spot = person(issue, 'spotlight', board);
+    const spot = person(issue, 'spotlight');
     if (preview) console.info('Newsletter preview · Spotlight Photo value from Wix:', issue.spotlightPhoto, '→ image used:', spot?.photo);
     const story = rich(f('spotlightStory'));
     if (spot && story) {
@@ -307,14 +297,14 @@
   }
 
   if (issueRoot) {
-    Promise.all([loadIssues(), loadBoard(), loadUpcoming()]).then(([issues, board, upcoming]) => {
+    Promise.all([loadIssues(), loadUpcoming()]).then(([issues, upcoming]) => {
       const wanted = params.get('issue');
       const visible = issues.filter(i => preview || isPublished(i));
       const key = (wanted || '').trim().toLowerCase();
       const issue = key ? visible.find(i => issueKeys(i).includes(key)) : visible[0];
       if (!issue) console.warn('Newsletter: no issue matches', key, issues.map(i => ({ keys: issueKeys(i), published: i.published })));
       if (!issue) { issueMessage('Issue not found', 'This issue isn’t available. <a href="newsletter.html">See all newsletters</a>.'); return; }
-      renderIssue(issue, board, upcoming);
+      renderIssue(issue, upcoming);
     }).catch(err => {
       console.warn('Newsletter failed to load', err);
       issueMessage('We couldn’t load this issue', `Please refresh the page, or email <a href="mailto:${CONTACT}">${CONTACT}</a>.`);
