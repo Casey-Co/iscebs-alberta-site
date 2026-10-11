@@ -8,8 +8,8 @@
   - Each section only appears if it has content, so leave a section blank to skip it.
   - Education ahead: lists upcoming Wix events automatically with Register links.
     The issue only sets the section's label, heading and intro.
-  - President: type the board member's name; their photo, credentials and
-    LinkedIn come from the Board Members collection automatically.
+  - President: type the board member's name (must match Board Members exactly);
+    their photo comes from Board Members. Optional President Photo field overrides it.
   - Member spotlight: any member. Fill Spotlight Name, Spotlight Photo (image),
     Spotlight Role, Spotlight Work and Spotlight LinkedIn. If the person is on
     the board, blank fields are filled from Board Members.
@@ -118,7 +118,8 @@
     return {
       name,
       first: firstName(name),
-      photo: imageUrl(field(issue, prefix + 'Photo')) || imageUrl(field(b, 'photo', 'image')) || `assets/board/${slugify(name)}.jpg`,
+      // Issue photo first, then Board Members photo, then the board photo stored with the site (board members only).
+      photo: imageUrl(field(issue, prefix + 'Photo')) || imageUrl(field(b, 'photo', 'image')) || (b.title ? `assets/board/${slugify(name)}.jpg` : ''),
       role: field(issue, prefix + 'Role') || [field(b, 'credentials'), field(b, 'role')].filter(Boolean).join(' · '),
       work: field(issue, prefix + 'Work') || boardWork,
       linkedin: safeLink(field(issue, prefix + 'LinkedIn', prefix + 'Linkedin', prefix + 'LinkedInUrl') || field(b, 'linkedIn', 'linkedin'))
@@ -158,7 +159,7 @@
     if (pres && presMessage) {
       contents.push(['president', `From ${pres.first}`]);
       sections.push(`<section id="president" class="issue-section president-message"><div>
-        <img class="issue-president-photo" src="${esc(pres.photo)}" alt="${esc(pres.name)}" width="160" height="211" onerror="this.remove()">
+        ${pres.photo ? `<img class="issue-president-photo" src="${esc(pres.photo)}" alt="${esc(pres.name)}" width="160" height="211" onerror="this.remove()">` : ''}
         <p class="eyebrow">FROM THE PRESIDENT</p>
         <h2>${esc(f('presidentHeading') || `A welcome from ${pres.first}`)}</h2>
         <p class="issue-byline">${esc(pres.name)}${f('presidentRole') ? `<br>${text(f('presidentRole'))}` : ''}</p>
@@ -208,7 +209,7 @@
     if (spot && story) {
       contents.push(['spotlight', `Meet ${spot.first}`]);
       sections.push(`<section id="spotlight" class="issue-section board-spotlight"><div>
-        <img src="${esc(spot.photo)}" alt="${esc(spot.name)}" width="372" height="491" data-spotlight-photo onerror="this.dataset.failed=1;this.remove()">
+        ${spot.photo ? `<img src="${esc(spot.photo)}" alt="${esc(spot.name)}" width="372" height="491" data-spotlight-photo onerror="this.dataset.failed=1;this.remove()">` : ''}
         <p class="eyebrow">MEMBER SPOTLIGHT</p>
         <h2>Meet ${esc(spot.name)}</h2>
         ${spot.role ? `<p>${esc(spot.role)}</p>` : ''}
