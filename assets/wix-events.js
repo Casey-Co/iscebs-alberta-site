@@ -242,7 +242,7 @@
   }
 
   // Past events: every Wix event that has ended, newest first, grouped by year.
-  // The list built into events.html is only a backup, shown if Wix can't be reached.
+  // The section stays hidden until Wix returns at least one ended event.
   function loadPast() {
     const box = document.querySelector('[data-past-events]');
     if (!box) return;
@@ -266,7 +266,7 @@
           format: loc.type === 'ONLINE' ? (loc.name || 'Online') : [loc.name, city !== loc.name ? city : ''].filter(Boolean).join(' · ')
         };
       }).sort((a, b) => b.date.localeCompare(a.date));
-      if (!all.length) return; // nothing in Wix yet: keep built-in list
+      if (!all.length) return; // nothing ended yet: section stays hidden
 
       const years = [...new Set(all.map(e => e.date.slice(0, 4)))];
       const list = y => `<ol class="past-list">${all.filter(e => e.date.startsWith(y)).map(e =>
@@ -275,7 +275,8 @@
         ? `<div class="past-year"><h3>${esc(y)}</h3>${list(y)}</div>`
         : `<details class="past-year"><summary>Explore ${esc(y)} events <span aria-hidden="true">+</span></summary>${list(y)}</details>`).join('');
       box.dataset.source = 'wix';
-    }).catch(err => console.warn('Past events: showing built-in list.', err));
+      box.closest('section').hidden = false;
+    }).catch(err => console.warn('Past events: could not load from Wix.', err));
   }
 
   if (!W || !W.configured()) { fallback(); return; }
