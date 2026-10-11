@@ -241,8 +241,8 @@
     if (status) status.innerHTML = 'We couldn’t load live registration details. Please refresh the page, or email <a href="mailto:ab.iscebs@gmail.com">ab.iscebs@gmail.com</a> for help.';
   }
 
-  // Past events: the list built into events.html, plus any Wix event that has ended
-  // (added automatically, so nobody has to move an event here by hand).
+  // Past events: every Wix event that has ended, newest first, grouped by year.
+  // The list built into events.html is only a backup, shown if Wix can't be reached.
   function loadPast() {
     const box = document.querySelector('[data-past-events]');
     if (!box) return;
@@ -251,36 +251,30 @@
       query: {
         filter: { status: { $eq: 'ENDED' } },
         sort: [{ fieldName: 'dateAndTimeSettings.startDate', order: 'DESC' }],
-        paging: { limit: 100, offset: 0 }
+        paging: { limit: 200, offset: 0 }
       }
     }).then(({ events: ended = [] }) => {
-      const existing = [...box.querySelectorAll('.past-event')].map(li => ({
-        date: li.querySelector('time')?.getAttribute('datetime') || '',
-        label: li.querySelector('time')?.textContent || '',
-        title: li.querySelector('h4')?.textContent || '',
-        format: li.querySelector('p')?.textContent || ''
-      }));
-      const key = e => e.date + '|' + e.title.trim().toLowerCase();
-      const seen = new Set(existing.map(key));
-      const added = ended.filter(e => e.dateAndTimeSettings?.startDate).map(e => {
+      const all = ended.filter(e => e.title && e.dateAndTimeSettings?.startDate).map(e => {
         const d = new Date(e.dateAndTimeSettings.startDate);
         const zone = tz(e);
+        const loc = e.location || {};
+        const city = loc.address?.city || '';
         return {
           date: new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d),
           label: new Intl.DateTimeFormat('en-US', { timeZone: zone, month: 'long', day: 'numeric', year: 'numeric' }).format(d),
-          title: e.title || '',
-          format: e.location?.type === 'ONLINE' ? 'Online' : (e.location?.name || '')
+          title: e.title,
+          format: loc.type === 'ONLINE' ? (loc.name || 'Online') : [loc.name, city !== loc.name ? city : ''].filter(Boolean).join(' · ')
         };
-      }).filter(e => e.title && !seen.has(key(e)));
-      if (!added.length) return;
+      }).sort((a, b) => b.date.localeCompare(a.date));
+      if (!all.length) return; // nothing in Wix yet: keep built-in list
 
-      const all = existing.concat(added).sort((a, b) => b.date.localeCompare(a.date));
       const years = [...new Set(all.map(e => e.date.slice(0, 4)))];
       const list = y => `<ol class="past-list">${all.filter(e => e.date.startsWith(y)).map(e =>
         `<li class="past-event"><time datetime="${esc(e.date)}">${esc(e.label)}</time><h4>${esc(e.title)}</h4>${e.format ? `<p>${esc(e.format)}</p>` : ''}</li>`).join('')}</ol>`;
       box.innerHTML = years.map((y, i) => i === 0
         ? `<div class="past-year"><h3>${esc(y)}</h3>${list(y)}</div>`
         : `<details class="past-year"><summary>Explore ${esc(y)} events <span aria-hidden="true">+</span></summary>${list(y)}</details>`).join('');
+      box.dataset.source = 'wix';
     }).catch(err => console.warn('Past events: showing built-in list.', err));
   }
 
