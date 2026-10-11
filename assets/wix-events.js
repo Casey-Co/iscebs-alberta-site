@@ -273,7 +273,7 @@
         `<li class="past-event"><time datetime="${esc(e.date)}">${esc(e.label)}</time><h4>${esc(e.title)}</h4>${e.format ? `<p>${esc(e.format)}</p>` : ''}</li>`).join('')}</ol>`;
       box.innerHTML = years.map((y, i) => i === 0
         ? `<div class="past-year"><h3>${esc(y)}</h3>${list(y)}</div>`
-        : `<details class="past-year"><summary>Explore ${esc(y)} events <span aria-hidden="true">+</span></summary>${list(y)}</details>`).join('');
+        : `<details class="past-year"><summary>Explore ${esc(y)} events</summary>${list(y)}</details>`).join('');
       box.dataset.source = 'wix';
       box.closest('section').hidden = false;
     }).catch(err => console.warn('Past events: could not load from Wix.', err));
