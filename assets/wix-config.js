@@ -13,6 +13,6 @@ window.WIX_SETTINGS = {
   WIX_CLIENT_ID: 'a32b1e07-fe9f-489b-862f-11d1e30287d0',
   COLLECTIONS: {
     boardMembers: 'Import2', // "Board Members" collection
-    newsletterIssues: 'NewsletterIssues' // "Newsletter Issues" collection
+    newsletterIssues: 'Import3' // "Newsletter Issues" collection
   }
 };
