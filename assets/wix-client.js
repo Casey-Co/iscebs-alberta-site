@@ -66,8 +66,9 @@
   // Wix image value (wix:image://v1/<id>/<name>#...) -> public URL.
   function imageUrl(value) {
     if (!value) return '';
-    if (typeof value === 'object') value = value.url || value.src || '';
-    const m = String(value).match(/^wix:image:\/\/v1\/([^/#]+)/);
+    if (typeof value === 'object') value = value.url || value.src || value.image || value.id || '';
+    if (/^[\w-]+~mv2\.\w+$/.test(String(value))) return `https://static.wixstatic.com/media/${value}`;
+    const m = String(value).match(/^(?:wix:)?image:\/\/v1\/([^/#?]+)/);
     if (m) return `https://static.wixstatic.com/media/${m[1]}`;
     return safeLink(value);
   }

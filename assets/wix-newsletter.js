@@ -203,6 +203,7 @@
 
     // Member spotlight (any member; photo from the Spotlight Photo field)
     const spot = person(issue, 'spotlight', board);
+    if (preview) console.info('Newsletter preview · Spotlight Photo value from Wix:', issue.spotlightPhoto, '→ image used:', spot?.photo);
     const story = rich(f('spotlightStory'));
     if (spot && story) {
       contents.push(['spotlight', `Meet ${spot.first}`]);
