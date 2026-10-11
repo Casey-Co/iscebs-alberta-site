@@ -57,3 +57,18 @@ details.past-year .past-list{margin:0}
 details.past-year .past-event:last-child{border-bottom:0}
 @media (max-width:700px){.past-event{grid-template-columns:1fr}.past-event time{grid-row:auto;padding:0 0 6px}.past-event h4{font-size:21px}}
 div.past-year .past-list{margin-bottom:0}details.past-year{border-top:0}
+
+/* Tickets (events.html) */
+.ticket-form{display:grid;gap:16px;margin-top:8px;max-width:560px}
+.ticket-list{display:grid}
+.ticket-row{display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center;border-top:1px solid #cbd3d0;padding:14px 0}
+.ticket-row:last-child{border-bottom:1px solid #cbd3d0}
+.ticket-row small{display:block;color:var(--muted);font-size:.8rem;margin-top:3px}
+.ticket-price{font-size:.95rem;white-space:nowrap}
+.ticket-qty select{font:inherit;padding:8px 10px;border:1px solid #aab7b8;border-radius:2px;background:#fff}
+.ticket-status{font-size:.8rem;color:var(--muted)}
+.ticket-form button[type=submit]{justify-self:start;cursor:pointer}
+.ticket-form button[disabled]{opacity:.6;cursor:wait}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.purchase-notice{background:var(--sage);padding:18px 22px;margin-top:24px;line-height:1.6}
+.registration-panel .ticket-row:first-child{border-top:0}

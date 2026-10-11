@@ -1,14 +1,14 @@
 /*
-  Events page: upcoming events, loaded live from Wix Events.
+  Events page: upcoming and past events, loaded live from Wix Events.
 
-  Editors: create and publish events in Wix > Events. Every published upcoming
-  event appears here automatically, soonest first. Put venue details, pricing
-  and anything else attendees need in the event's description in Wix.
-
-  Registration (RSVP events): the form is built from the event's registration
-  form in Wix (Wix > Events > event > Registration form), shown on this page,
-  and each response is saved straight into the event's guest list in Wix.
-  Wix sends the confirmation email. Paid ticketing is not wired up yet.
+  EDITORS (all in Wix > Events, headless project):
+  - Every published upcoming event appears here automatically, soonest first.
+  - The text under the event title is the event's "Short description" in Wix.
+  - RSVP events: visitors fill in the registration form on this page and are
+    added to the event's guest list in Wix. Wix sends the confirmation email.
+  - Ticketed events: visitors choose tickets here and pay on Wix's secure
+    checkout, then return to this page. Requires payments set up in Wix.
+  - Past events: every event that has ended, grouped by year.
 
   If Wix can't be reached, the event built into events.html is shown until the
   date in its data-show-until attribute, then a general "check back" message.
@@ -17,101 +17,138 @@
   const W = window.WixSite;
   const root = document.querySelector('[data-wix-events]');
   if (!root) return;
-  const { esc, safeLink, richText } = W || {};
+  const { esc, safeLink } = W || {};
+  const CONTACT = '<a href="mailto:ab.iscebs@gmail.com">ab.iscebs@gmail.com</a>';
+  const tz = event => event.dateAndTimeSettings?.timeZoneId || 'America/Edmonton';
+  const events = new Map();
 
-    function dateParts(event) {
+  // ---------- Formatting ----------
+  function dateParts(event) {
     const s = event.dateAndTimeSettings || {};
     if (s.dateAndTimeTbd || !s.startDate) {
       return { tbd: true, label: s.dateAndTimeTbdMessage || 'Date to be announced' };
     }
     const d = new Date(s.startDate);
-    const tz = s.timeZoneId || 'America/Edmonton';
-    const fmt = opts => new Intl.DateTimeFormat('en-CA', { timeZone: tz, ...opts }).format(d);
+    const fmt = opts => new Intl.DateTimeFormat('en-CA', { timeZone: tz(event), ...opts }).format(d);
     const zone = fmt({ timeZoneName: 'short', hour: 'numeric' }).split(' ').pop();
     return {
       dayMonth: fmt({ day: 'numeric', month: 'long' }),
       year: fmt({ year: 'numeric' }),
       long: fmt({ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
-      time: fmt({ hour: 'numeric', minute: '2-digit' }).replace('a.m.', 'a.m.').replace('p.m.', 'p.m.') + ' ' + zone
+      time: fmt({ hour: 'numeric', minute: '2-digit' }) + ' ' + zone
     };
   }
 
   function where(event) {
     const loc = event.location || {};
-    if (loc.type === 'ONLINE') return 'Online';
+    if (loc.type === 'ONLINE') return esc(loc.name || 'Online');
     const addr = loc.address?.formattedAddress || loc.address?.addressLine || '';
     return [loc.name, addr].filter(Boolean).map(esc).join('<br>') || 'To be announced';
   }
 
-  const tz = event => event.dateAndTimeSettings?.timeZoneId || 'America/Edmonton';
-  const events = new Map();
+  const money = m => {
+    if (!m || m.value === undefined) return '';
+    const n = Number(m.value);
+    if (!n) return 'Free';
+    try { return new Intl.NumberFormat('en-CA', { style: 'currency', currency: m.currency || 'CAD' }).format(n); }
+    catch { return `${m.value} ${m.currency || ''}`.trim(); }
+  };
+
+  // ---------- Upcoming event card ----------
+  function render(event) {
+    const d = dateParts(event);
+    const kind = event.location?.type === 'ONLINE' ? 'ONLINE EVENT' : 'CHAPTER EVENT';
+    return `<section class="wrap featured-event">
+      <div class="event-poster">
+        <div class="eyebrow">ALBERTA CHAPTER · ${kind}</div>
+        <h2>${esc(event.title)}</h2>
+        <div class="poster-bottom">${d.tbd ? `<strong>${esc(d.label)}</strong>` : `<strong>${esc(d.dayMonth)}</strong><span>${esc(d.year)} · ${esc(d.time)}</span>`}</div>
+      </div>
+      <div class="event-details">
+        <span class="tag">Upcoming chapter event</span>
+        <h2>${esc(event.title)}</h2>
+        ${event.shortDescription ? `<p>${esc(event.shortDescription)}</p>` : ''}
+        <dl>
+          <div><dt>When</dt><dd>${d.tbd ? esc(d.label) : `${esc(d.long)}<br>${esc(d.time)}`}</dd></div>
+          <div><dt>Where</dt><dd>${where(event)}</dd></div>
+        </dl>
+        ${registration(event)}
+      </div>
+    </section>`;
+  }
 
   function registration(event) {
     const r = event.registration || {};
-    let message, action = '';
+    const id = esc(event.id);
+    let message = '', action = '';
     if (event.status === 'CANCELED') message = 'This event has been cancelled.';
     else if (r.tickets?.soldOut) message = 'This event is sold out.';
     else if (r.registrationPaused || r.registrationDisabled) message = 'Registration is currently closed. Please check back for availability.';
     else if (r.status === 'SCHEDULED_RSVP' && r.rsvp?.startDate) {
       message = 'Registration opens ' + new Intl.DateTimeFormat('en-CA', { dateStyle: 'long', timeZone: tz(event) }).format(new Date(r.rsvp.startDate)) + '.';
-    } else if ((r.status === 'OPEN_RSVP' || r.status === 'OPEN_RSVP_WAITLIST_ONLY') && event.form?.controls?.length) {
+    } else if (r.status === 'OPEN_RSVP' || r.status === 'OPEN_RSVP_WAITLIST_ONLY') {
       const waitlist = r.status === 'OPEN_RSVP_WAITLIST_ONLY';
-      message = waitlist ? 'This event is full. You can join the waitlist.' : 'Registration is open.';
-      action = `<button class="button" type="button" data-rsvp-open="${esc(event.id)}" aria-expanded="false">${waitlist ? 'Join the waitlist' : 'Register now'}</button>
-        <form class="rsvp-form" data-rsvp-form="${esc(event.id)}" hidden novalidate>${formFields(event)}
+      if (waitlist) message = 'This event is full. You can join the waitlist.';
+      action = `<button class="button" type="button" data-open="rsvp" data-event="${id}" aria-expanded="false">${waitlist ? 'Join the waitlist' : 'RSVP now'}</button>
+        <form class="rsvp-form" data-rsvp-form="${id}" hidden novalidate>${formFields(event)}
           <p class="rsvp-error" role="alert" hidden></p>
-          <button class="button" type="submit">${esc(event.form.messages?.rsvp?.submitActionLabel || (waitlist ? 'Join the waitlist' : 'Submit registration'))}</button>
+          <button class="button" type="submit">${waitlist ? 'Join the waitlist' : 'Submit RSVP'}</button>
+        </form>`;
+    } else if (r.status === 'OPEN_TICKETS') {
+      action = `<button class="button" type="button" data-open="tickets" data-event="${id}" aria-expanded="false">Get tickets</button>
+        <form class="ticket-form" data-ticket-form="${id}" hidden novalidate>
+          <div class="ticket-list" data-ticket-list><p>Loading tickets…</p></div>
+          <p class="rsvp-error" role="alert" hidden></p>
+          <button class="button" type="submit" hidden>Continue to checkout</button>
         </form>`;
     } else if (r.status === 'OPEN_EXTERNAL' && safeLink(r.external?.url)) {
-      message = 'Registration is open.';
       action = `<a class="button" href="${esc(safeLink(r.external.url))}" target="_blank" rel="noopener noreferrer">Register now <span aria-hidden="true">↗</span></a>`;
-    } else if (r.status === 'OPEN_TICKETS') {
-      message = 'Tickets will be available here soon. Email <a href="mailto:ab.iscebs@gmail.com">ab.iscebs@gmail.com</a> to register in the meantime.';
     } else message = 'Registration is currently closed. Please check back for availability.';
 
-    return `<div class="registration-panel" data-rsvp-panel="${esc(event.id)}">
-      <h3>Event registration</h3>
-      <p role="status" data-rsvp-status>${message}</p>
+    return `<div class="registration-panel" data-panel="${id}">
+      ${message ? `<p role="status">${message}</p>` : ''}
       ${action}
     </div>`;
   }
 
-  // Build form fields from the event's Wix registration form.
+  // ---------- RSVP ----------
+  // Build fields from the event's Wix registration form (name and email if none is shared).
   function formFields(event) {
-    const controls = (event.form.controls || []).filter(c => !c.deleted)
+    const fallback = [
+      { type: 'NAME', inputs: [{ name: 'firstName', label: 'First name', mandatory: true }, { name: 'lastName', label: 'Last name', mandatory: true }] },
+      { type: 'INPUT', inputs: [{ name: 'email', label: 'Email', mandatory: true }] }
+    ];
+    const controls = (event.form?.controls?.length ? event.form.controls : fallback)
+      .filter(c => !c.deleted && c.type !== 'GUEST_CONTROL')
       .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
     let n = 0;
-    const id = () => `rsvp-${esc(event.id)}-${n++}`;
+    const fid = () => `rsvp-${esc(event.id)}-${n++}`;
     const req = i => (i.mandatory ? ' required' : '');
     const star = i => (i.mandatory ? ' <span aria-hidden="true">*</span>' : '');
-    return controls.map(c => {
-      if (c.type === 'GUEST_CONTROL') return ''; // additional guests: register separately
-      return (c.inputs || []).map(i => {
-        const name = esc(i.name), label = esc(i.label || i.name), fid = id();
-        const opts = i.options || [];
-        if (c.type === 'DROPDOWN') {
-          return `<label class="rsvp-field" for="${fid}"><span>${label}${star(i)}</span>
-            <select id="${fid}" name="${name}"${req(i)}><option value="">Please select</option>${opts.map(o => `<option>${esc(o)}</option>`).join('')}</select></label>`;
-        }
-        if (c.type === 'RADIO' || c.type === 'CHECKBOX') {
-          const type = c.type === 'RADIO' ? 'radio' : 'checkbox';
-          return `<fieldset class="rsvp-field rsvp-choice" data-name="${name}" data-type="${type}"${i.mandatory ? ' data-required' : ''}>
-            <legend>${label}${star(i)}</legend>
-            ${opts.map(o => `<label><input type="${type}" name="${name}" value="${esc(o)}"> ${esc(o)}</label>`).join('')}</fieldset>`;
-        }
-        if (c.type === 'TEXTAREA') {
-          return `<label class="rsvp-field" for="${fid}"><span>${label}${star(i)}</span>
-            <textarea id="${fid}" name="${name}" rows="3"${i.maxLength ? ` maxlength="${+i.maxLength}"` : ''}${req(i)}></textarea></label>`;
-        }
-        const type = i.name === 'email' ? 'email' : c.type === 'DATE' ? 'date' : /phone/i.test(i.name) ? 'tel' : 'text';
-        const auto = { firstName: 'given-name', lastName: 'family-name', email: 'email' }[i.name] || 'off';
-        return `<label class="rsvp-field" for="${fid}"><span>${label}${star(i)}</span>
-          <input id="${fid}" type="${type}" name="${name}" autocomplete="${auto}"${i.maxLength ? ` maxlength="${+i.maxLength}"` : ''}${req(i)}></label>`;
-      }).join('');
-    }).join('');
+    return controls.map(c => (c.inputs || []).map(i => {
+      const name = esc(i.name), label = esc(i.label || i.name), id = fid(), opts = i.options || [];
+      if (c.type === 'DROPDOWN') {
+        return `<label class="rsvp-field" for="${id}"><span>${label}${star(i)}</span>
+          <select id="${id}" name="${name}"${req(i)}><option value="">Please select</option>${opts.map(o => `<option>${esc(o)}</option>`).join('')}</select></label>`;
+      }
+      if (c.type === 'RADIO' || c.type === 'CHECKBOX') {
+        const type = c.type === 'RADIO' ? 'radio' : 'checkbox';
+        return `<fieldset class="rsvp-field rsvp-choice" data-name="${name}" data-type="${type}"${i.mandatory ? ' data-required' : ''}>
+          <legend>${label}${star(i)}</legend>
+          ${opts.map(o => `<label><input type="${type}" name="${name}" value="${esc(o)}"> ${esc(o)}</label>`).join('')}</fieldset>`;
+      }
+      if (c.type === 'TEXTAREA') {
+        return `<label class="rsvp-field" for="${id}"><span>${label}${star(i)}</span>
+          <textarea id="${id}" name="${name}" rows="3"${i.maxLength ? ` maxlength="${+i.maxLength}"` : ''}${req(i)}></textarea></label>`;
+      }
+      const type = i.name === 'email' ? 'email' : c.type === 'DATE' ? 'date' : /phone/i.test(i.name) ? 'tel' : 'text';
+      const auto = { firstName: 'given-name', lastName: 'family-name', email: 'email' }[i.name] || 'off';
+      return `<label class="rsvp-field" for="${id}"><span>${label}${star(i)}</span>
+        <input id="${id}" type="${type}" name="${name}" autocomplete="${auto}"${i.maxLength ? ` maxlength="${+i.maxLength}"` : ''}${req(i)}></label>`;
+    }).join('')).join('');
   }
 
-  const ERRORS = {
+  const RSVP_ERRORS = {
     MEMBER_EMAIL_ALREADY_REGISTERED: 'You’re already registered for this event with that email address.',
     MEMBER_ALREADY_REGISTERED: 'You’re already registered for this event.',
     RSVPS_CLOSED: 'Registration for this event has closed.',
@@ -122,32 +159,32 @@
     INVALID_FORM_RESPONSE: 'Please check the form: one or more answers weren’t accepted.'
   };
 
+  function showError(form, html) {
+    const box = form.querySelector('.rsvp-error');
+    box.innerHTML = html;
+    box.hidden = false;
+  }
+
   async function submitRsvp(form) {
     const event = events.get(form.dataset.rsvpForm);
-    const panel = form.closest('[data-rsvp-panel]');
-    const errorBox = form.querySelector('.rsvp-error');
+    const panel = form.closest('[data-panel]');
     const submit = form.querySelector('button[type="submit"]');
-    errorBox.hidden = true;
+    const label = submit.textContent;
+    form.querySelector('.rsvp-error').hidden = true;
 
-    // Validate (including required radio/checkbox groups).
     let valid = form.checkValidity();
     form.querySelectorAll('fieldset[data-required]').forEach(fs => {
       const ok = fs.querySelector('input:checked');
       fs.classList.toggle('invalid', !ok);
       if (!ok) valid = false;
     });
-    if (!valid) {
-      errorBox.textContent = 'Please complete the required fields (marked *).';
-      errorBox.hidden = false;
-      form.reportValidity();
-      return;
-    }
+    if (!valid) { showError(form, 'Please complete the required fields (marked *).'); form.reportValidity(); return; }
 
     const data = new FormData(form);
+    const checkboxes = new Set([...form.querySelectorAll('fieldset[data-type="checkbox"]')].map(f => f.dataset.name));
     const inputValues = [];
-    const checkboxNames = new Set([...form.querySelectorAll('fieldset[data-type="checkbox"]')].map(f => f.dataset.name));
     for (const name of new Set(data.keys())) {
-      if (checkboxNames.has(name)) inputValues.push({ inputName: name, values: data.getAll(name) });
+      if (checkboxes.has(name)) inputValues.push({ inputName: name, values: data.getAll(name) });
       else if (String(data.get(name)).trim()) inputValues.push({ inputName: name, value: String(data.get(name)).trim() });
     }
     const get = k => String(data.get(k) || '').trim();
@@ -156,92 +193,143 @@
     submit.disabled = true;
     submit.textContent = 'Sending…';
     try {
-      const result = await W.post('/events/v2/rsvps', {
+      await W.post('/events/v2/rsvps', {
         rsvp: {
           eventId: event.id, firstName: get('firstName'), lastName: get('lastName'), email: get('email'),
           status: waitlist ? 'WAITLIST' : 'YES', form: { inputValues }
         }
       });
-      const conf = event.form.messages?.rsvp?.[waitlist ? 'waitlistMessages' : 'positiveMessages']?.confirmation || {};
-      const cal = result.calendarLinks || event.calendarUrls || {};
-      panel.innerHTML = `<h3>${esc(conf.title || (waitlist ? 'You’re on the waitlist' : 'You’re registered!'))}</h3>
-        <p role="status">${esc(conf.message || 'Thank you. A confirmation email is on its way to ' + get('email') + '.')}</p>
-        ${safeLink(cal.google) ? `<a class="text-link" href="${esc(safeLink(cal.google))}" target="_blank" rel="noopener noreferrer">Add to Google Calendar <span aria-hidden="true">↗</span></a>` : ''}`;
-      panel.querySelector('h3').setAttribute('tabindex', '-1');
+      const conf = event.form?.messages?.rsvp?.[waitlist ? 'waitlistMessages' : 'positiveMessages']?.confirmation || {};
+      panel.innerHTML = `<h3 tabindex="-1">${esc(conf.title || (waitlist ? 'You’re on the waitlist' : 'You’re registered!'))}</h3>
+        <p role="status">${esc(conf.message || 'Thank you. A confirmation email is on its way to ' + get('email') + '.')}</p>`;
       panel.querySelector('h3').focus();
     } catch (err) {
       console.warn('RSVP failed', err.status, err.code, err);
-      errorBox.innerHTML = esc(ERRORS[err.code] || 'Sorry, we couldn’t complete your registration online.') +
-        ' Need help? Email <a href="mailto:ab.iscebs@gmail.com">ab.iscebs@gmail.com</a>.';
-      errorBox.hidden = false;
+      showError(form, esc(RSVP_ERRORS[err.code] || 'Sorry, we couldn’t complete your registration online.') + ` Need help? Email ${CONTACT}.`);
       submit.disabled = false;
-      submit.textContent = event.form.messages?.rsvp?.submitActionLabel || (waitlist ? 'Join the waitlist' : 'Submit registration');
+      submit.textContent = label;
     }
   }
 
+  // ---------- Tickets ----------
+  async function loadTickets(form) {
+    const event = events.get(form.dataset.ticketForm);
+    const list = form.querySelector('[data-ticket-list]');
+    const submit = form.querySelector('button[type="submit"]');
+    try {
+      const { definitions = [] } = await W.post('/events/v1/checkout/available-tickets/query',
+        { offset: 0, limit: 100, sort: 'orderIndex:asc', filter: { eventId: event.id } });
+      const rows = [];
+      definitions.forEach(t => {
+        const max = Math.min(t.limitPerCheckout || 10, 10);
+        const onSale = !t.saleStatus || t.saleStatus === 'SALE_STARTED';
+        const status = t.saleStatus === 'SALE_SCHEDULED' ? 'Not on sale yet' : t.saleStatus === 'SALE_ENDED' ? 'Sale ended' : '';
+        const options = t.pricing?.pricingOptions?.options?.length
+          ? t.pricing.pricingOptions.options.map(o => ({ key: `${t.id}|${o.id}`, name: `${t.name} – ${o.name}`, price: money(o.price) }))
+          : [{ key: `${t.id}|`, name: t.name, price: money(t.pricing?.fixedPrice || t.pricing?.minPrice || t.price) }];
+        options.forEach(o => rows.push(`<div class="ticket-row">
+          <div><strong>${esc(o.name)}</strong>${t.description ? `<small>${esc(t.description)}</small>` : ''}</div>
+          <div class="ticket-price">${esc(o.price)}</div>
+          ${onSale ? `<label class="ticket-qty"><span class="sr-only">Quantity of ${esc(o.name)}</span>
+            <select name="${esc(o.key)}">${Array.from({ length: max + 1 }, (_, n) => `<option>${n}</option>`).join('')}</select></label>`
+            : `<div class="ticket-status">${status}</div>`}
+        </div>`));
+      });
+      if (!rows.length) { list.innerHTML = `<p>Tickets aren’t available online right now. Email ${CONTACT} for help.</p>`; return; }
+      list.innerHTML = rows.join('');
+      submit.hidden = false;
+    } catch (err) {
+      console.warn('Tickets failed to load', err.status, err.code, err);
+      list.innerHTML = `<p>We couldn’t load tickets right now. Please refresh the page, or email ${CONTACT}.</p>`;
+    }
+  }
+
+  async function checkout(form) {
+    const event = events.get(form.dataset.ticketForm);
+    const submit = form.querySelector('button[type="submit"]');
+    form.querySelector('.rsvp-error').hidden = true;
+    const tickets = [...form.querySelectorAll('.ticket-qty select')]
+      .map(s => ({ key: s.name, quantity: +s.value })).filter(t => t.quantity > 0)
+      .map(({ key, quantity }) => {
+        const [ticketDefinitionId, pricingOptionId] = key.split('|');
+        return { ticketDefinitionId, quantity, ...(pricingOptionId ? { ticketInfo: { pricingOptionId } } : {}) };
+      });
+    if (!tickets.length) { showError(form, 'Please choose at least one ticket.'); return; }
+
+    submit.disabled = true;
+    submit.textContent = 'Reserving your tickets…';
+    try {
+      const res = await W.post('/events/v1/ticket-reservations', { ticketReservation: { tickets } });
+      const reservationId = res.ticketReservation?.id || res.id;
+      const here = location.href.split(/[?#]/)[0];
+      const { redirectSession } = await W.post('/_api/redirects-api/v1/redirect-session', {
+        eventsCheckout: { reservationId, eventSlug: event.slug },
+        callbacks: { postFlowUrl: here, thankYouPageUrl: here + '?purchase=complete' }
+      });
+      location.href = redirectSession.fullUrl;
+    } catch (err) {
+      console.warn('Checkout failed', err.status, err.code, err);
+      const msg = err.status === 403
+        ? 'Tickets aren’t on sale online yet.'
+        : 'Sorry, we couldn’t start checkout.';
+      showError(form, `${msg} Email ${CONTACT} to register.`);
+      submit.disabled = false;
+      submit.textContent = 'Continue to checkout';
+    }
+  }
+
+  // Message after returning from Wix checkout.
+  function purchaseNotice() {
+    const q = new URLSearchParams(location.search);
+    if (q.get('purchase') !== 'complete') return;
+    const note = document.createElement('div');
+    note.className = 'wrap purchase-notice';
+    note.setAttribute('role', 'status');
+    note.innerHTML = `<strong>Thank you, your tickets are confirmed.</strong> ${q.get('orderNumber') ? `Order ${esc(q.get('orderNumber'))}. ` : ''}A confirmation email with your tickets is on its way.`;
+    root.before(note);
+  }
+
+  // ---------- Interactions ----------
   root.addEventListener('click', e => {
-    const btn = e.target.closest('[data-rsvp-open]');
+    const btn = e.target.closest('[data-open]');
     if (!btn) return;
-    const form = root.querySelector(`[data-rsvp-form="${CSS.escape(btn.dataset.rsvpOpen)}"]`);
+    const id = CSS.escape(btn.dataset.event);
+    const form = root.querySelector(btn.dataset.open === 'rsvp' ? `[data-rsvp-form="${id}"]` : `[data-ticket-form="${id}"]`);
     form.hidden = false;
     btn.hidden = true;
     btn.setAttribute('aria-expanded', 'true');
-    form.querySelector('input, select, textarea')?.focus();
+    if (btn.dataset.open === 'tickets') loadTickets(form);
+    else form.querySelector('input, select, textarea')?.focus();
   });
   root.addEventListener('change', e => {
     e.target.closest('fieldset.invalid')?.classList.remove('invalid');
+    const err = e.target.closest('form')?.querySelector('.rsvp-error');
+    if (err) err.hidden = true;
   });
   root.addEventListener('submit', e => {
-    const form = e.target.closest('[data-rsvp-form]');
+    const form = e.target.closest('form');
     if (!form) return;
     e.preventDefault();
-    submitRsvp(form);
+    if (form.dataset.rsvpForm) submitRsvp(form);
+    else if (form.dataset.ticketForm) checkout(form);
   });
 
-  function render(event) {
-    const d = dateParts(event);
-    const kind = event.location?.type === 'ONLINE' ? 'ONLINE EVENT' : 'CHAPTER EVENT';
-    const cal = event.calendarUrls || {};
-    const calLinks = [cal.google && `<a class="text-link" href="${esc(safeLink(cal.google))}" target="_blank" rel="noopener noreferrer">Add to Google Calendar <span aria-hidden="true">↗</span></a>`,
-      cal.ics && `<a class="text-link" href="${esc(safeLink(cal.ics))}">Add to Outlook / Apple Calendar</a>`].filter(Boolean).join(' ');
-    const description = richText(event.description) || (event.shortDescription ? `<p>${esc(event.shortDescription)}</p>` : '');
-
-    return `<section class="wrap featured-event">
-      <div class="event-poster">
-        <div class="eyebrow">ALBERTA CHAPTER · ${kind}</div>
-        <h2>${esc(event.title)}</h2>
-        <div class="poster-bottom">${d.tbd ? `<strong>${esc(d.label)}</strong>` : `<strong>${esc(d.dayMonth)}</strong><span>${esc(d.year)} · ${esc(d.time)}</span>`}</div>
-      </div>
-      <div class="event-details">
-        <span class="tag">Upcoming chapter event</span>
-        <h2>${esc(event.title)}</h2>
-        ${description ? `<div class="event-description">${description}</div>` : ''}
-        <dl>
-          <div><dt>When</dt><dd>${d.tbd ? esc(d.label) : `${esc(d.long)}<br>${esc(d.time)}`}</dd></div>
-          <div><dt>Where</dt><dd>${where(event)}</dd></div>
-        </dl>
-        ${registration(event)}
-        ${calLinks ? `<div class="calendar-links">${calLinks}</div>` : ''}
-      </div>
-    </section>`;
-  }
-
+  // ---------- Empty / offline states ----------
   const none = `<section class="wrap featured-event-empty section">
       <div class="eyebrow">UPCOMING EVENTS</div>
       <h2>New events are on the way.</h2>
-      <p>There are no upcoming chapter events scheduled right now. Check back soon, or email
-      <a href="mailto:ab.iscebs@gmail.com">ab.iscebs@gmail.com</a> to hear about the next one.</p>
+      <p>There are no upcoming chapter events scheduled right now. Check back soon, or email ${CONTACT} to hear about the next one.</p>
     </section>`;
 
-  // Fallback when Wix is unreachable: keep the built-in event until it has passed.
   function fallback() {
     const until = Date.parse(root.dataset.showUntil || '');
     if (!until || Date.now() > until) { root.innerHTML = none; return; }
     const status = root.querySelector('[data-registration-status]');
-    if (status) status.innerHTML = 'We couldn’t load live registration details. Please refresh the page, or email <a href="mailto:ab.iscebs@gmail.com">ab.iscebs@gmail.com</a> for help.';
+    if (status) status.innerHTML = `We couldn’t load live registration details. Please refresh the page, or email ${CONTACT} for help.`;
   }
 
-  // Past events: every Wix event that has ended, newest first, grouped by year.
+  // ---------- Past events ----------
+  // Every Wix event that has ended, newest first, grouped by year.
   // The section stays hidden until Wix returns at least one ended event.
   function loadPast() {
     const box = document.querySelector('[data-past-events]');
@@ -266,7 +354,7 @@
           format: loc.type === 'ONLINE' ? (loc.name || 'Online') : [loc.name, city !== loc.name ? city : ''].filter(Boolean).join(' · ')
         };
       }).sort((a, b) => b.date.localeCompare(a.date));
-      if (!all.length) return; // nothing ended yet: section stays hidden
+      if (!all.length) return;
 
       const years = [...new Set(all.map(e => e.date.slice(0, 4)))];
       const list = y => `<ol class="past-list">${all.filter(e => e.date.startsWith(y)).map(e =>
@@ -279,11 +367,13 @@
     }).catch(err => console.warn('Past events: could not load from Wix.', err));
   }
 
+  // ---------- Start ----------
+  purchaseNotice();
   if (!W || !W.configured()) { fallback(); return; }
   loadPast();
 
   W.post('/events/v3/events/query', {
-    fields: ['DETAILS', 'TEXTS', 'REGISTRATION', 'FORM'],
+    fields: ['DETAILS', 'REGISTRATION', 'FORM'],
     query: {
       filter: { status: { $in: ['UPCOMING', 'STARTED'] } },
       sort: [{ fieldName: 'dateAndTimeSettings.startDate', order: 'ASC' }],

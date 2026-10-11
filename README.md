@@ -7,7 +7,7 @@ Static HTML/CSS/JavaScript site. No build step, no server, no packages to instal
 
 | Content | Edited in | Notes |
 |---|---|---|
-| Upcoming events, registration | **Wix → Events** (headless project) | Every published upcoming event appears on `events.html` automatically. RSVP events show an on-page form built from the event's Wix registration form; responses go into the Wix guest list and Wix sends the confirmation email. Paid ticketing isn't wired up yet. |
+| Upcoming events, RSVPs, tickets | **Wix → Events** (headless project) | Every published upcoming event appears on `events.html` automatically. The text under the title is the event's *Short description*. RSVP events: on-page form → Wix guest list (Wix emails confirmation). Ticketed events: choose tickets on the page → Wix secure checkout → back to the Events page. Ended events appear under Past events. |
 | Board members (About page) | **Wix → CMS → Board Members** collection | Sorted by *Display Order*. Photos uploaded in Wix; if none, `assets/board/<first-last>.jpg` is used. |
 | Everything else (page text, layout, design) | The HTML files in this repository | Edit in GitHub (pencil icon) and commit; the site republishes in a minute or two. |
 
@@ -19,6 +19,11 @@ Static HTML/CSS/JavaScript site. No build step, no server, no packages to instal
 - `assets/wix-board.js` — loads the board onto `about.html`.
 - `assets/wix-events.js` — loads upcoming events onto `events.html`.
 - Each page keeps a built-in copy of its content, shown if Wix can't be reached.
+
+## Ticket checkout requirements
+
+- Payments set up in Wix (Core plan + a payment provider under Getting Paid). Without them, visitors see "Tickets aren't on sale online yet".
+- The site's domain added to the Chapter Website OAuth client's allowed redirect domains (Headless Settings), so Wix can send buyers back.
 
 ## When the site moves to its final domain
 
