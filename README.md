@@ -33,3 +33,11 @@ Static HTML/CSS/JavaScript site. No build step, no server, no packages to instal
 
 1. In Wix: Headless Settings → the "Chapter Website" client → add the new domain to its allowed domains/URLs.
 2. Search the HTML for `sharkey-c980.chatgpt.site` and replace with the new domain (newsletter sharing metadata).
+
+## Search and sharing
+
+- Every public page has a title, description and social preview tags (`og:*`), using `assets/share.jpg` (1200×630) and the final address `https://abiscebs.com/`.
+- `index.html` carries the chapter's Organization details for Google (JSON-LD, logo `assets/logo.png`).
+- `sitemap.xml` and `robots.txt` use `https://abiscebs.com/`; they take effect once the domain points here. Add new newsletter issues to `sitemap.xml` if you want them listed.
+- `newsletter-email.html` and `newsletter-january-2027.html` are `noindex` (kept out of search).
+- If a page's title or description changes, update its matching `og:title` / `og:description` too.
