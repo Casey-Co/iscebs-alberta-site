@@ -12,14 +12,14 @@
 
   W.queryCollection(collection, [{ fieldName: 'displayOrder', order: 'ASC' }]).then(members => {
     if (!members.length) return; // keep built-in copy
-    const { field, esc, safeLink, imageUrl } = W;
+    const { field, esc, imageUrl } = W;
     grid.innerHTML = members.map(m => {
       const name = field(m, 'title', 'name');
       const role = field(m, 'role');
       const credentials = field(m, 'credentials');
       const work = [field(m, 'jobTitle', 'job_title', 'jobtitle'), field(m, 'company')]
         .filter(Boolean).map(esc).join('<br>');
-      const linkedin = safeLink(field(m, 'linkedIn', 'linkedin', 'linkedInUrl'));
+      const linkedin = W.webLink(field(m, 'linkedIn', 'linkedin', 'linkedInUrl')); // https:// optional
       // Photo comes only from the Wix CMS. No photo uploaded = no photo shown.
       const photo = imageUrl(field(m, 'photo', 'image'));
       return `<article class="board-member">
