@@ -77,6 +77,31 @@
     </section>`;
   }
 
+  // ---------- Later events: compact rows ----------
+  // The soonest event gets the full layout above; every event after it is a
+  // compact row. Register / Get tickets opens the same form under the row.
+  function renderRow(event) {
+    const d = dateParts(event);
+    const kind = event.location?.type === 'ONLINE' ? 'ONLINE EVENT' : 'CHAPTER EVENT';
+    const s = event.dateAndTimeSettings || {};
+    const fmt = o => new Intl.DateTimeFormat('en-CA', { timeZone: tz(event), ...o }).format(new Date(s.startDate));
+    const place = where(event).replace(/<br>/g, ', ');
+    return `<article class="event-row" id="event-${esc(event.id)}">
+      <div class="event-date">${d.tbd ? '<span>DATE</span><strong>–</strong><small>TBA</small>'
+        : `<span>${esc(fmt({ month: 'short' }).replace('.', '').toUpperCase())}</span><strong>${esc(fmt({ day: 'numeric' }))}</strong><small>${esc(d.year)}</small>`}</div>
+      <div class="event-row-info">
+        <div class="eyebrow">${kind}</div>
+        <h3>${esc(event.title)}</h3>
+        ${event.shortDescription ? `<p class="event-row-desc">${esc(event.shortDescription)}</p>` : ''}
+        <div class="event-meta">${d.tbd ? esc(d.label) : esc(d.long + ' · ' + d.time)} · ${place}</div>
+        ${registration(event)}
+      </div>
+    </article>`;
+  }
+  const renderRows = list => list.length ? `<section class="wrap event-rows" aria-labelledby="more-events-heading">
+      <div class="eyebrow">ALSO COMING UP</div><h2 id="more-events-heading">More upcoming events</h2>
+      ${list.map(renderRow).join('')}</section>` : '';
+
   function registration(event) {
     const r = event.registration || {};
     const id = esc(event.id);
@@ -381,7 +406,7 @@
     }
   }).then(({ events: list = [] }) => {
     list.forEach(e => events.set(e.id, e));
-    root.innerHTML = list.length ? list.map(render).join('') : none;
+    root.innerHTML = list.length ? render(list[0]) + renderRows(list.slice(1)) : none;
     root.dataset.source = 'wix';
     // Arriving from a link like events.html?register=<id>: go to that event and open its form.
     const want = new URLSearchParams(location.search).get('register') || (location.hash.startsWith('#event-') ? location.hash.slice(7) : '');
