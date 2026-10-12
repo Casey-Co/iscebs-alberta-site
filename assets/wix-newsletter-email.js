@@ -131,7 +131,13 @@
   const button = (label, href) => `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${C.navy}" style="background:${C.navy};">
     <a href="${esc(href)}" style="display:inline-block;padding:15px 26px;font-family:${SANS};font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;">${esc(label)} &#8599;</a></td></tr></table>`;
   const section = (inner, bg = '#ffffff') => `<tr><td bgcolor="${bg}" style="background:${bg};padding:40px 40px 32px;border-top:1px solid ${C.line};">${inner}</td></tr>`;
-  const photo = (src, alt, w) => src ? `<img src="${esc(src)}" alt="${esc(alt)}" width="${w}" style="display:block;width:${w}px;max-width:100%;height:auto;border:0;margin:0 0 20px;">` : '';
+
+  // Photo on the left, intro (label, heading, name) on the right; text below runs full width.
+  // Tables rather than floats so it holds together in Outlook and in Wix.
+  const beside = (src, alt, intro) => src ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;"><tr>
+      <td width="130" valign="top" style="width:130px;padding:0 20px 0 0;"><img src="${esc(src)}" alt="${esc(alt)}" width="130" style="display:block;width:130px;max-width:130px;height:auto;border:0;"></td>
+      <td valign="middle">${intro}</td></tr></table>` : `<div style="margin:0 0 8px;">${intro}</div>`;
+  const h2side = t => `<h2 style="margin:0 0 12px;font-family:${SERIF};font-size:28px;line-height:34px;font-weight:normal;color:${C.ink};">${t}</h2>`;
 
   function buildEmail(issue, upcoming) {
     const f = (...k) => field(issue, ...k);
@@ -144,9 +150,9 @@
     const pres = person(issue, 'president');
     const presMessage = emailRich(f('presidentMessage'));
     if (pres && presMessage) parts.push(section(`
-      ${photo(pres.photo, pres.name, 160)}${eyebrow('From the President')}
-      ${h2(esc(f('presidentHeading') || `A welcome from ${pres.first}`))}
-      <p style="margin:0 0 22px;font-family:${SANS};font-size:14px;line-height:22px;color:${C.muted};">${esc(pres.name)}${f('presidentRole') ? `<br>${text(f('presidentRole'))}` : ''}</p>
+      ${beside(pres.photo, pres.name, `${eyebrow('From the President')}
+        ${h2side(esc(f('presidentHeading') || `A welcome from ${pres.first}`))}
+        <p style="margin:0;font-family:${SANS};font-size:14px;line-height:22px;color:${C.muted};">${esc(pres.name)}${f('presidentRole') ? `<br>${text(f('presidentRole'))}` : ''}</p>`)}
       ${presMessage}`));
 
     // Celebrations
@@ -191,11 +197,11 @@
     const spot = person(issue, 'spotlight');
     const story = emailRich(f('spotlightStory'));
     if (spot && story) parts.push(section(`
-      ${photo(spot.photo, spot.name, 220)}${eyebrow('Member spotlight')}
-      ${h2(`Meet ${esc(spot.name)}`)}
-      ${spot.role ? `<p style="margin:0 0 6px;font-family:${SANS};font-size:16px;line-height:24px;color:${C.ink};">${esc(spot.role)}</p>` : ''}
-      ${spot.work ? `<p style="margin:0 0 14px;font-family:${SANS};font-size:13px;line-height:20px;color:${C.muted};">${text(spot.work)}</p>` : ''}
-      ${spot.linkedin ? `<p style="margin:0 0 24px;">${textLink(`Connect with ${spot.first}`, spot.linkedin)}</p>` : ''}
+      ${beside(spot.photo, spot.name, `${eyebrow('Member spotlight')}
+        ${h2side(`Meet ${esc(spot.name)}`)}
+        ${spot.role ? `<p style="margin:0 0 6px;font-family:${SANS};font-size:15px;line-height:22px;color:${C.ink};">${esc(spot.role)}</p>` : ''}
+        ${spot.work ? `<p style="margin:0 0 12px;font-family:${SANS};font-size:13px;line-height:20px;color:${C.muted};">${text(spot.work)}</p>` : ''}
+        ${spot.linkedin ? `<p style="margin:0;">${textLink(`Connect with ${spot.first}`, spot.linkedin)}</p>` : ''}`)}
       ${f('spotlightHeading') ? `<h3 style="${STYLES.H3}">${esc(f('spotlightHeading'))}</h3>` : ''}${story}`));
 
     // Society connection
