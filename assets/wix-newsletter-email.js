@@ -4,7 +4,9 @@
   Builds an email-safe copy of a newsletter issue from the same Wix CMS row the
   website uses (Wix > CMS > Newsletter Issues), so nothing is typed twice.
   - Open newsletter-email.html?issue=<slug>, or pick the issue from the list.
-  - "Copy email code" copies the HTML for email tools that accept custom HTML.
+  - "Copy code for Wix" copies a version for the HTML element in Wix Email
+    Marketing, using only the tags and attributes Wix allows.
+  - "Copy email code" copies the HTML for other email tools that accept custom HTML.
   - "Copy email for pasting" copies the formatted email for pasting into an
     email you are writing (e.g. Gmail or Outlook).
   Email programs ignore most website styling, so this file uses simple tables and
@@ -227,7 +229,7 @@
 <body style="margin:0;padding:0;background:${C.ivory};">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(preheader)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.ivory}" style="background:${C.ivory};"><tr><td align="center" style="padding:24px 12px;">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:100%;background:#ffffff;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:100%;background:#ffffff;" data-email-card>
   <tr><td style="padding:14px 40px;font-family:${SANS};font-size:12px;line-height:18px;color:${C.muted};background:${C.ivory};" class="email-pad">
     <a href="${issueLink}" style="color:${C.muted};">View this newsletter on the website</a></td></tr>
   <tr><td bgcolor="${C.navy}" style="background:${C.navy};padding:22px 40px;" class="email-pad">
@@ -246,17 +248,54 @@
 </table></td></tr></table></body></html>`;
   }
 
+  // ---------- Wix version ----------
+  // Wix Email Marketing's HTML element keeps only these tags and attributes and
+  // removes everything else (no <head>, <style>, bgcolor, <strong>, <em>...).
+  const WIX = {
+    H1: 'style dir class', H2: 'style dir class', H3: 'style dir class', H4: 'style dir class', H5: 'style dir class',
+    DIV: 'style dir class', SPAN: 'style dir class', P: 'style dir class', A: 'style dir target rel href',
+    OL: 'style dir class start', UL: 'style dir class', LI: 'style dir class', S: 'style dir class', B: 'style dir class',
+    I: 'style dir class', U: 'style dir class', BR: '', PRE: 'style dir class',
+    TABLE: 'style class align role cellpadding cellspacing width', TR: 'style class', TBODY: 'style class', THEAD: 'style class',
+    TD: 'style class align valign width rowspan colspan', IMG: 'style class src width height border alt'
+  };
+  const RENAME = { STRONG: 'b', EM: 'i', BLOCKQUOTE: 'div' };
+  function toWix(fullHtml) {
+    const doc = new DOMParser().parseFromString(fullHtml, 'text/html');
+    const card = doc.querySelector('[data-email-card]');
+    card.setAttribute('width', '100%');
+    card.setAttribute('style', card.getAttribute('style').replace('width:600px;', 'width:100%;'));
+    const walk = el => {
+      [...el.children].forEach(child => {
+        let node = child;
+        if (RENAME[node.tagName]) {
+          const n = doc.createElement(RENAME[node.tagName]);
+          [...node.attributes].forEach(a => n.setAttribute(a.name, a.value));
+          n.append(...node.childNodes); node.replaceWith(n); node = n;
+        }
+        if (!(node.tagName in WIX)) { const kids = [...node.childNodes]; node.replaceWith(...kids); kids.forEach(k => k.nodeType === 1 && walk({ children: [k] })); return; }
+        const ok = WIX[node.tagName].split(' ');
+        [...node.attributes].forEach(a => { if (!ok.includes(a.name)) node.removeAttribute(a.name); });
+        walk(node);
+      });
+    };
+    const holder = doc.createElement('div'); holder.append(card);
+    walk(holder);
+    return holder.innerHTML;
+  }
+
   // ---------- Tool page ----------
   const select = root.querySelector('[data-email-issue]');
   const frame = root.querySelector('[data-email-preview]');
   const status = root.querySelector('[data-email-status]');
   const buttons = root.querySelectorAll('[data-email-action]');
-  let issues = [], upcoming = [], html = '', current = null;
+  let issues = [], upcoming = [], html = '', wixHtml = '', current = null;
   const say = t => { status.textContent = t; };
 
   function show(issue) {
     current = issue;
     html = buildEmail(issue, upcoming);
+    wixHtml = toWix(html);
     frame.srcdoc = html;
     buttons.forEach(b => { b.disabled = false; });
     const note = isPublished(issue) ? '' : ' This issue is not published yet, so the “View on the website” link will not work for members until it is.';
@@ -264,14 +303,16 @@
     const url = new URL(location.href); url.searchParams.set('issue', issueSlug(issue)); history.replaceState(null, '', url);
   }
 
-  async function copyHtml() {
-    try { await navigator.clipboard.writeText(html); say('Email code copied. Paste it into your email tool’s custom HTML / code option.'); }
+  async function copyText(value, done) {
+    try { await navigator.clipboard.writeText(value); say(done); }
     catch {
-      const t = document.createElement('textarea'); t.value = html; t.style.position = 'fixed'; t.style.opacity = '0';
+      const t = document.createElement('textarea'); t.value = value; t.style.position = 'fixed'; t.style.opacity = '0';
       document.body.append(t); t.select(); const ok = document.execCommand('copy'); t.remove();
-      say(ok ? 'Email code copied. Paste it into your email tool’s custom HTML / code option.' : 'Copy was blocked by the browser. Use “Download .html file” instead.');
+      say(ok ? done : 'Copy was blocked by the browser. Use “Download .html file” instead.');
     }
   }
+  const copyWix = () => copyText(wixHtml, 'Wix code copied. In your Wix campaign, add an HTML element and paste it in.');
+  const copyHtml = () => copyText(html, 'Email code copied. Paste it into your email tool’s custom HTML / code option.');
   async function copyRich() {
     try {
       await navigator.clipboard.write([new ClipboardItem({ 'text/html': new Blob([html], { type: 'text/html' }), 'text/plain': new Blob([frame.contentDocument.body.innerText], { type: 'text/plain' }) })]);
@@ -290,7 +331,7 @@
     a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     say('Email file downloaded.');
   }
-  buttons.forEach(b => b.addEventListener('click', () => ({ html: copyHtml, rich: copyRich, download })[b.dataset.emailAction]()));
+  buttons.forEach(b => b.addEventListener('click', () => ({ wix: copyWix, html: copyHtml, rich: copyRich, download })[b.dataset.emailAction]()));
   select.addEventListener('change', () => show(issues[select.selectedIndex]));
 
   if (!W || !W.configured()) { say('The Wix connection is not set up.'); return; }
