@@ -208,7 +208,7 @@
     }
 
     // Society connection
-    if (f('societyHeading') || f('webinarsText')) {
+    if (f('societyHeading') || f('societyIntro')) {
       contents.push(['society', 'Society connection']);
       sections.push(`<section id="society" class="issue-section society-feature"><div>
         <div class="eyebrow">YOUR INTERNATIONAL SOCIETY</div>
@@ -218,7 +218,6 @@
         <a href="https://www.iscebs.org/home/education---resources/webcasts" target="_blank" rel="noopener noreferrer"><strong>ISCEBS webcasts ↗</strong><span>Explore current and recorded education.</span></a>
         <a href="https://www.iscebs.org/home/education---resources/newsbriefs" target="_blank" rel="noopener noreferrer"><strong>Society NewsBriefs ↗</strong><span>Read news from the Society and its chapters.</span></a>
         <a href="https://www.iscebs.org/membership/iscebslink" target="_blank" rel="noopener noreferrer"><strong>ISCEBSLink ↗</strong><span>Connect with peers in the Society member forum.</span></a>
-        ${f('webinarsText') ? `<div class="issue-callout"><h3>${esc(f('webinarsHeading') || 'Canadian webinars')}</h3>${rich(f('webinarsText'))}<a class="text-link" href="https://www.iscebs.org/home/education---resources/webcasts" target="_blank" rel="noopener noreferrer">Browse Society webcasts ↗</a></div>` : ''}
         <p class="small-note">Some resources require Society membership and sign-in.</p>
       </div></section>`);
     }
