@@ -20,6 +20,7 @@ Static HTML/CSS/JavaScript site. No build step, no server, no packages to instal
 - `assets/wix-client.js` — shared connection helpers.
 - `assets/wix-board.js` — loads the board onto `about.html`.
 - `assets/wix-events.js` — upcoming events, RSVP/tickets and past events on `events.html`.
+- `assets/wix-home-event.js` — the next upcoming event in the home page event box.
 - `assets/wix-newsletter.js` — newsletter issue page and archive.
 - `assets/wix-newsletter-email.js` — email version of an issue (`newsletter-email.html`).
 - Each page keeps a built-in copy of its content, shown if Wix can't be reached.
