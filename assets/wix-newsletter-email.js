@@ -125,18 +125,20 @@
 
   // ---------- Email building blocks ----------
   const eyebrow = (t, color = C.ink) => `<p style="margin:0 0 14px;font-family:${SANS};font-size:11px;line-height:16px;letter-spacing:2px;font-weight:bold;text-transform:uppercase;color:${color};">${esc(t)}</p>`;
-  const h2 = t => `<h2 style="margin:0 0 16px;font-family:${SERIF};font-size:32px;line-height:38px;font-weight:normal;color:${C.ink};">${t}</h2>`;
-  const lead = t => `<p style="margin:0 0 20px;font-family:${SANS};font-size:18px;line-height:28px;color:${C.muted};">${t}</p>`;
+  const h2 = t => `<h2 style="margin:0 0 16px;font-family:${SERIF};font-size:28px;line-height:34px;font-weight:normal;color:${C.ink};">${t}</h2>`;
+  const lead = t => `<p style="margin:0 0 20px;font-family:${SANS};font-size:17px;line-height:26px;color:${C.muted};">${t}</p>`;
   const textLink = (label, href) => `<a href="${esc(href)}" style="font-family:${SANS};font-size:15px;font-weight:bold;color:${C.ink};text-decoration:underline;">${esc(label)} &#8599;</a>`;
   const button = (label, href) => `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${C.navy}" style="background:${C.navy};">
     <a href="${esc(href)}" style="display:inline-block;padding:15px 26px;font-family:${SANS};font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;">${esc(label)} &#8599;</a></td></tr></table>`;
-  const section = (inner, bg = '#ffffff') => `<tr><td bgcolor="${bg}" style="background:${bg};padding:40px 40px 32px;border-top:1px solid ${C.line};">${inner}</td></tr>`;
+  const section = (inner, bg = '#ffffff') => `<tr><td bgcolor="${bg}" style="background:${bg};padding:34px 26px 28px;border-top:1px solid ${C.line};">${inner}</td></tr>`;
 
   // Photo on the left, intro (label, heading, name) on the right; text below runs full width.
   // Tables rather than floats so it holds together in Outlook and in Wix.
-  const beside = (src, alt, intro) => src ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;"><tr>
-      <td width="130" valign="top" style="width:130px;padding:0 20px 0 0;"><img src="${esc(src)}" alt="${esc(alt)}" width="130" style="display:block;width:130px;max-width:130px;height:auto;border:0;"></td>
-      <td valign="middle">${intro}</td></tr></table>` : `<div style="margin:0 0 8px;">${intro}</div>`;
+  // Photo beside the intro on wide screens; it drops above the intro on phones.
+  // Two inline-block boxes with max-widths wrap on their own, so no media queries
+  // are needed (Wix removes them). font-size:0 removes the gap between the boxes.
+  const beside = (src, alt, intro) => src ? `<div style="font-size:0;margin:0 0 22px;">
+      <div style="display:inline-block;width:100%;max-width:150px;vertical-align:middle;font-size:16px;"><img src="${esc(src)}" alt="${esc(alt)}" width="130" style="display:block;width:130px;max-width:100%;height:auto;border:0;margin:0 0 14px;"></div><div style="display:inline-block;width:100%;max-width:370px;vertical-align:middle;font-size:16px;">${intro}</div></div>` : `<div style="margin:0 0 8px;">${intro}</div>`;
   const h2side = t => `<h2 style="margin:0 0 12px;font-family:${SERIF};font-size:28px;line-height:34px;font-weight:normal;color:${C.ink};">${t}</h2>`;
 
   function buildEmail(issue, upcoming) {
@@ -167,7 +169,7 @@
       ${f('celebrationsIntro') ? lead(text(f('celebrationsIntro'))) : ''}
       ${cards.map(([t, body]) => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 18px;"><tr><td style="border-top:3px solid #a2b6ae;padding-top:14px;">
         <h3 style="margin:0 0 10px;font-family:${SERIF};font-size:22px;line-height:28px;font-weight:normal;color:${C.ink};">${t}</h3>${body}</td></tr></table>`).join('')}
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${C.sage}" style="background:${C.sage};padding:24px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${C.sage}" style="background:${C.sage};padding:20px;">
         <h3 style="margin:0 0 10px;font-family:${SANS};font-size:18px;line-height:24px;color:${C.ink};">Have a milestone to share?</h3>
         <p style="${P_STYLE}">Tell us your name, the exam or designation you completed and when you completed it. Include a photo if you’d like one featured, and let us know we have permission to publish your details.</p>
         ${textLink('Share your achievement', `mailto:${CONTACT}?subject=Newsletter%20exam%20achievement`)}</td></tr></table>`));
@@ -236,18 +238,18 @@
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(preheader)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.ivory}" style="background:${C.ivory};"><tr><td align="center" style="padding:24px 12px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:100%;background:#ffffff;" data-email-card>
-  <tr><td style="padding:14px 40px;font-family:${SANS};font-size:12px;line-height:18px;color:${C.muted};background:${C.ivory};" class="email-pad">
+  <tr><td style="padding:14px 26px;font-family:${SANS};font-size:12px;line-height:18px;color:${C.muted};background:${C.ivory};" class="email-pad">
     <a href="${issueLink}" style="color:${C.muted};">View this newsletter on the website</a></td></tr>
-  <tr><td bgcolor="${C.navy}" style="background:${C.navy};padding:22px 40px;" class="email-pad">
+  <tr><td bgcolor="${C.navy}" style="background:${C.navy};padding:22px 26px;" class="email-pad">
     <p style="margin:0;font-family:${SANS};font-size:20px;line-height:26px;font-weight:bold;letter-spacing:1px;color:#ffffff;">ISCEBS <span style="color:#85948d;font-weight:normal;">/</span> ALBERTA</p>
     <p style="margin:4px 0 0;font-family:${SANS};font-size:11px;line-height:16px;color:#bacac9;">International Society of Certified Employee Benefit Specialists</p></td></tr>
-  <tr><td bgcolor="${C.navy}" style="background:${C.navy};padding:28px 40px 44px;border-top:1px solid #2b4a5c;" class="email-pad">
+  <tr><td bgcolor="${C.navy}" style="background:${C.navy};padding:26px 26px 38px;border-top:1px solid #2b4a5c;" class="email-pad">
     ${eyebrow('Alberta Chapter Newsletter', '#c4d7d0')}
-    <h1 style="margin:0 0 18px;font-family:${SERIF};font-size:44px;line-height:50px;font-weight:normal;color:${C.ivory};">${text(title)}</h1>
+    <h1 style="margin:0 0 18px;font-family:${SERIF};font-size:38px;line-height:44px;font-weight:normal;color:${C.ivory};">${text(title)}</h1>
     ${f('heroText') ? `<p style="margin:0 0 26px;font-family:${SANS};font-size:18px;line-height:28px;color:${C.paleText};">${text(f('heroText'))}</p>` : ''}
     ${meta ? `<p style="margin:0;font-family:${SANS};font-size:12px;line-height:18px;letter-spacing:2px;color:${C.ivory};">${meta}</p>` : ''}</td></tr>
   ${parts.join('\n')}
-  <tr><td bgcolor="#f0eee7" style="background:#f0eee7;padding:30px 40px;font-family:${SANS};font-size:12px;line-height:20px;color:#4f6570;" class="email-pad">
+  <tr><td bgcolor="#f0eee7" style="background:#f0eee7;padding:28px 26px;font-family:${SANS};font-size:12px;line-height:20px;color:#4f6570;" class="email-pad">
     <p style="margin:0 0 10px;font-family:${SERIF};font-size:18px;line-height:24px;color:${C.ink};">Knowledge shared. Connections made. Careers strengthened.</p>
     <p style="margin:0 0 6px;">Alberta Chapter · International Society of Certified Employee Benefit Specialists</p>
     <p style="margin:0;"><a href="mailto:${CONTACT}" style="color:#4f6570;">${CONTACT}</a> &nbsp;·&nbsp; <a href="${abs('index.html')}" style="color:#4f6570;">Chapter website</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/company/94094639/" style="color:#4f6570;">LinkedIn</a></p></td></tr>
