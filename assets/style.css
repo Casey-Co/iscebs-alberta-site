@@ -83,5 +83,5 @@ nav.issue-contents{position:static;background:none;box-shadow:none;padding-inlin
 @media(min-width:651px){.page-intro--tight{padding-top:48px;padding-bottom:28px}.membership-lead{gap:64px;margin-bottom:72px}.membership-statement{padding:48px 44px}.member-reasons article{padding:20px 0}}
 @media(max-width:650px){.page-intro--tight{padding-top:32px;padding-bottom:20px}}
 /* Events: less space above Past events */
-@media(min-width:651px){.past-events{padding-top:8px}}
-@media(max-width:650px){.past-events{padding-top:0}}
+@media(min-width:651px){.past-events{padding-top:0}.event-rows{margin-bottom:44px}}
+@media(max-width:650px){.past-events{padding-top:0}.event-rows{margin-bottom:32px}}
