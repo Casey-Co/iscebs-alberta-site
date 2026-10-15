@@ -32,7 +32,6 @@ body.vibrant{background:var(--snow);color:var(--spruce)}
 
 /* Hero: the one big colour moment */
 .vibrant .hero-copy{background:var(--glacier-deep);color:#fff;position:relative}
-.vibrant .hero-copy:before{content:'';position:absolute;left:0;top:0;bottom:0;width:10px;background:var(--canola)}
 .vibrant .hero h1{color:#fff}
 .vibrant .hero-copy p{color:#F0FBFC}
 .vibrant .hero-note{color:#fff}
@@ -91,5 +90,4 @@ body.vibrant{background:var(--snow);color:var(--spruce)}
 @media(max-width:650px){
   .vibrant .chapter-strip{grid-template-columns:1fr}
   .vibrant .chapter-strip span,.vibrant .chapter-strip span:first-child{padding:14px 20px}
-  .vibrant .hero-copy:before{width:6px}
 }
