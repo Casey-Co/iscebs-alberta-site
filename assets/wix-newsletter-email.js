@@ -241,7 +241,7 @@
   <tr><td style="padding:14px 26px;font-family:${SANS};font-size:12px;line-height:18px;color:${C.muted};background:${C.ivory};" class="email-pad">
     <a href="${issueLink}" style="color:${C.muted};">View this newsletter on the website</a></td></tr>
   <tr><td bgcolor="${C.navy}" style="background:${C.navy};padding:22px 26px;" class="email-pad">
-    <p style="margin:0;font-family:${SANS};font-size:20px;line-height:26px;font-weight:bold;letter-spacing:1px;color:#ffffff;">ISCEBS <span style="color:#85948d;font-weight:normal;">/</span> ALBERTA</p>
+    <p style="margin:0;font-family:${SANS};font-size:20px;line-height:26px;font-weight:bold;letter-spacing:1px;color:#ffffff;">ISCEBS Alberta Chapter</p>
     <p style="margin:4px 0 0;font-family:${SANS};font-size:11px;line-height:16px;color:#bacac9;">International Society of Certified Employee Benefit Specialists</p></td></tr>
   <tr><td bgcolor="${C.navy}" style="background:${C.navy};padding:26px 26px 38px;border-top:1px solid #2b4a5c;" class="email-pad">
     ${eyebrow('Alberta Chapter Newsletter', '#c4d7d0')}

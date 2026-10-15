@@ -252,7 +252,7 @@
     const [latest, ...older] = published;
     const when = monthYear(latest.date);
     if (latestBox) latestBox.innerHTML = `
-      <div class="newsletter-cover"><span class="eyebrow">ISCEBS / ALBERTA</span><h2>News from<br>your chapter.</h2><p>${esc([when, issueNo(latest.number)].filter(Boolean).join(' · '))}</p></div>
+      <div class="newsletter-cover"><span class="eyebrow">ISCEBS Alberta Chapter</span><h2>News from<br>your chapter.</h2><p>${esc([when, issueNo(latest.number)].filter(Boolean).join(' · '))}</p></div>
       <div><div class="eyebrow">LATEST ISSUE</div>
         <h2 id="latest-heading">${esc(when)}<br>${esc(field(latest, 'title'))}</h2>
         ${field(latest, 'summary') ? `<p>${text(field(latest, 'summary'))}</p>` : ''}
