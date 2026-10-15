@@ -1,0 +1,95 @@
+/* Vibrant Home page preview (home-vibrant.html only).
+   Palette drawn from Alberta: glacier lakes, prairie canola, the wild rose. */
+:root{
+  --glacier:#12A4B0;
+  --lake:#0B5563;
+  --canola:#F2C230;
+  --rose:#C93A6E;
+  --glacier-deep:#0B7D89;
+  --spruce:#12303E;
+  --snow:#F3F9F9;
+  --navy:var(--spruce);
+  --ink:var(--spruce);
+  --ivory:var(--snow);
+  --muted:#3F5A66;
+  --line:#CFE3E5;
+  --sage:#D6F0F1;
+}
+body.vibrant{background:var(--snow);color:var(--spruce)}
+
+/* Preview notice */
+.preview-bar{background:var(--canola);color:var(--spruce);font-size:13px;text-align:center;padding:8px 16px;font-weight:550}
+.preview-bar a{text-decoration:underline;text-underline-offset:3px}
+
+/* Top line + header */
+.vibrant .topline{background:var(--lake);color:#E6F6F7}
+.vibrant header{background:#fff;border-bottom:4px solid var(--glacier)}
+.vibrant .wordmark strong{color:var(--lake)}
+.vibrant nav>a[aria-current=page]:after{background:var(--rose);height:3px}
+.vibrant nav a:hover{color:var(--glacier)}
+.vibrant .button{background:var(--rose);border-color:var(--rose);color:#fff}
+.vibrant .button:hover{background:#A82F5B;border-color:#A82F5B;color:#fff}
+
+/* Hero: the one big colour moment */
+.vibrant .hero-copy{background:var(--glacier-deep);color:#fff;position:relative}
+.vibrant .hero-copy:before{content:'';position:absolute;left:0;top:0;bottom:0;width:10px;background:var(--canola)}
+.vibrant .hero h1{color:#fff}
+.vibrant .hero-copy p{color:#F0FBFC}
+.vibrant .hero-note{color:#fff}
+.vibrant .short-rule{background:var(--canola);height:3px;width:36px}
+
+/* Three statements, three colours */
+.vibrant .chapter-strip{padding-block:0;border-bottom:0;gap:0;color:#fff;font-size:15px;font-weight:550}
+.vibrant .chapter-strip span{border:0;padding:22px 26px}
+.vibrant .chapter-strip span:first-child{padding-left:26px;background:var(--lake)}
+.vibrant .chapter-strip span:nth-child(2){background:var(--canola);color:var(--spruce)}
+.vibrant .chapter-strip span:nth-child(3){background:var(--rose)}
+.vibrant .chapter-strip{width:100%;max-width:none}
+
+/* Vision */
+.vibrant .eyebrow{color:var(--lake)}
+.vibrant .vision-grid h2{color:var(--lake)}
+.vibrant .margin-note{color:var(--rose)}
+.vibrant .prose{color:var(--muted)}
+
+/* CEBS: canola field */
+.vibrant .credential-section{background:var(--canola)}
+.vibrant .credential-section .eyebrow{color:var(--spruce)}
+.vibrant .credential-section .prose{color:#2E3F38}
+.vibrant .credential-art{background:var(--lake)}
+.vibrant .credential-art:after{border-color:var(--glacier)}
+.vibrant .credential-lines{color:#BDE9EC}
+.vibrant .credential-bottom{color:var(--canola)}
+.vibrant .text-link{border-color:var(--rose)}
+.vibrant .text-link:hover{color:var(--rose)}
+.vibrant .credential-section .text-link{border-color:var(--spruce)}
+.vibrant .credential-section .text-link:hover{color:var(--lake)}
+
+/* Events */
+.vibrant .event-feature{border-color:var(--glacier)}
+.vibrant .event-date{background:var(--glacier-deep);color:#fff}
+.vibrant .event-feature:hover .event-info h3{color:var(--rose)}
+.vibrant .round-arrow{border-color:var(--rose);color:var(--rose)}
+
+/* Resources */
+.vibrant .resource-feature{background:#DDF2F3;border-top:6px solid var(--glacier)}
+
+/* Join band: wild rose */
+.vibrant .join-band{background:var(--rose)}
+.vibrant .join-inner .eyebrow{color:#FFE3EC}
+.vibrant .join-inner p{color:#FFEFF4}
+.vibrant .join-band .button.light{background:#fff;border-color:#fff;color:var(--rose)}
+.vibrant .join-band .button.light:hover{background:var(--canola);border-color:var(--canola);color:var(--spruce)}
+
+/* Footer */
+.vibrant footer{background:var(--lake);color:#E6F6F7}
+.vibrant footer .wordmark strong{color:#fff}
+.vibrant .footer-main>div>a:not(.wordmark),.vibrant .footer-main>div>p:not(.footer-brand p){color:#CDEDEF}
+.vibrant .footer-main h3{color:var(--canola)}
+.vibrant .footer-bottom{border-color:#2F7480;color:#BFE3E6}
+
+@media(max-width:650px){
+  .vibrant .chapter-strip{grid-template-columns:1fr}
+  .vibrant .chapter-strip span,.vibrant .chapter-strip span:first-child{padding:14px 20px}
+  .vibrant .hero-copy:before{width:6px}
+}
