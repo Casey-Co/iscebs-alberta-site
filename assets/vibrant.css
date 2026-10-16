@@ -1,93 +1,185 @@
-/* Vibrant Home page preview (home-vibrant.html only).
-   Palette drawn from Alberta: glacier lakes, prairie canola, the wild rose. */
+/* Colour version 3: CEBS colours, used with meaning.
+   Starting point: the IFEBP CEBS program site (ifebp.org/cebs).
+   Colour system:  teal   = Group Benefits (GBA) track
+                   orange = Retirement Plans (RPA) track
+                   navy   = the CEBS designation / the chapter
+                   peach  = warm supporting sections
+   Type: Source Serif 4 (weighty serif echoing the CEBS wordmark) + Public Sans. */
 :root{
-  --glacier:#12A4B0;
-  --lake:#0B5563;
-  --canola:#F2C230;
-  --rose:#C93A6E;
-  --glacier-deep:#0B7D89;
-  --spruce:#12303E;
-  --snow:#F3F9F9;
-  --navy:var(--spruce);
-  --ink:var(--spruce);
-  --ivory:var(--snow);
-  --muted:#3F5A66;
-  --line:#CFE3E5;
-  --sage:#D6F0F1;
+  --cebs-navy:#00447C;
+  --teal:#1C6987;
+  --sky:#2A9DCB;
+  --orange:#E27508;
+  --orange-text:#A34E06;  /* orange dark enough for small text on light backgrounds */
+  --peach:#F9E4D1;
+  --pale-sky:#E3EFFB;
+  --ink-dark:#12263F;
+  --page:#F5F8FB;
+  --serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --sans:'Public Sans','Segoe UI',Arial,sans-serif;
+  --navy:var(--ink-dark);
+  --ink:var(--ink-dark);
+  --ivory:var(--page);
+  --muted:#3F5468;
+  --line:#D3E1EE;
+  --sage:var(--pale-sky);
 }
-body.vibrant{background:var(--snow);color:var(--spruce)}
-
-/* Preview notice */
-.preview-bar{background:var(--canola);color:var(--spruce);font-size:13px;text-align:center;padding:8px 16px;font-weight:550}
-.preview-bar a{text-decoration:underline;text-underline-offset:3px}
+body.vibrant{background:var(--page);color:var(--ink-dark)}
 
 /* Top line + header */
-.vibrant .topline{background:var(--lake);color:#E6F6F7}
-.vibrant header{background:#fff;border-bottom:4px solid var(--glacier)}
-.vibrant .wordmark strong{color:var(--lake)}
-.vibrant nav>a[aria-current=page]:after{background:var(--rose);height:3px}
-.vibrant nav a:hover{color:var(--glacier)}
-.vibrant .button{background:var(--rose);border-color:var(--rose);color:#fff}
-.vibrant .button:hover{background:#A82F5B;border-color:#A82F5B;color:#fff}
+.vibrant .topline{background:var(--teal);color:#E8F2F7}
+.vibrant header{background:#fff;border-bottom:3px solid var(--teal)}
+.vibrant .wordmark strong{color:var(--cebs-navy)}
+.vibrant nav>a[aria-current=page]:after{background:var(--orange);height:3px}
+.vibrant nav a:hover{color:var(--teal)}
 
-/* Hero: the one big colour moment */
-.vibrant .hero-copy{background:var(--glacier-deep);color:#fff;position:relative}
+/* Buttons: CEBS orange with dark text (white on this orange is too faint to read) */
+.vibrant .button{background:var(--orange);border-color:var(--orange);color:var(--ink-dark);font-weight:650}
+.vibrant .button:hover{background:var(--cebs-navy);border-color:var(--cebs-navy);color:#fff}
+
+/* Home hero: CEBS navy */
+.vibrant .hero-copy{background:var(--cebs-navy);color:#fff;position:relative}
 .vibrant .hero h1{color:#fff}
-.vibrant .hero-copy p{color:#F0FBFC}
+.vibrant .hero-copy p{color:#E6EFF8}
 .vibrant .hero-note{color:#fff}
-.vibrant .short-rule{background:var(--canola);height:3px;width:36px}
+.vibrant .short-rule{background:var(--orange);height:3px;width:36px}
 
-/* Three statements, three colours */
-.vibrant .chapter-strip{padding-block:0;border-bottom:0;gap:0;color:#fff;font-size:15px;font-weight:550}
+/* Three statements: a nod to the CEBS site's coloured button bar */
+.vibrant .chapter-strip{padding-block:0;border-bottom:0;gap:0;color:#fff;font-size:15px;font-weight:600;width:100%;max-width:none}
 .vibrant .chapter-strip span{border:0;padding:22px 26px}
-.vibrant .chapter-strip span:first-child{padding-left:26px;background:var(--lake)}
-.vibrant .chapter-strip span:nth-child(2){background:var(--canola);color:var(--spruce)}
-.vibrant .chapter-strip span:nth-child(3){background:var(--rose)}
-.vibrant .chapter-strip{width:100%;max-width:none}
+.vibrant .chapter-strip span:first-child{padding-left:26px;background:#003562}
+.vibrant .chapter-strip span:nth-child(2){background:var(--teal);color:#fff}
+.vibrant .chapter-strip span:nth-child(3){background:var(--orange);color:var(--ink-dark)}
 
-/* Vision */
-.vibrant .eyebrow{color:var(--lake)}
-.vibrant .vision-grid h2{color:var(--lake)}
-.vibrant .margin-note{color:var(--rose)}
+/* Text accents */
+.vibrant .eyebrow{color:var(--cebs-navy)}
+.vibrant .vision-grid h2,.vibrant .page-intro h1{color:var(--cebs-navy)}
+.vibrant .margin-note{color:var(--teal)}
 .vibrant .prose{color:var(--muted)}
+.vibrant .text-link{border-color:var(--orange)}
+.vibrant .text-link:hover{color:var(--orange-text)}
 
-/* CEBS: canola field */
-.vibrant .credential-section{background:var(--canola)}
-.vibrant .credential-section .eyebrow{color:var(--spruce)}
-.vibrant .credential-section .prose{color:#2E3F38}
-.vibrant .credential-art{background:var(--lake)}
-.vibrant .credential-art:after{border-color:var(--glacier)}
-.vibrant .credential-lines{color:#BDE9EC}
-.vibrant .credential-bottom{color:var(--canola)}
-.vibrant .text-link{border-color:var(--rose)}
-.vibrant .text-link:hover{color:var(--rose)}
-.vibrant .credential-section .text-link{border-color:var(--spruce)}
-.vibrant .credential-section .text-link:hover{color:var(--lake)}
+/* CEBS block: peach, like the CEBS designation section */
+.vibrant .credential-section{background:var(--peach)}
+.vibrant .credential-section .eyebrow{color:var(--ink-dark)}
+.vibrant .credential-section h2{color:var(--cebs-navy)}
+.vibrant .credential-section .prose{color:#3B3A44}
+.vibrant .credential-art{background:var(--cebs-navy)}
+.vibrant .credential-art:after{display:none}
+.vibrant .credential-lines{color:#CFE4F5}
+.vibrant .credential-bottom{color:var(--peach)}
 
-/* Events */
-.vibrant .event-feature{border-color:var(--glacier)}
-.vibrant .event-date{background:var(--glacier-deep);color:#fff}
-.vibrant .event-feature:hover .event-info h3{color:var(--rose)}
-.vibrant .round-arrow{border-color:var(--rose);color:var(--rose)}
+/* Home events teaser */
+.vibrant .event-feature{border-color:#B9CCDD}
+.vibrant .event-date{background:var(--teal);color:#fff}
+.vibrant .event-feature:hover .event-info h3{color:var(--teal)}
+.vibrant .round-arrow{border-color:var(--orange);color:var(--orange-text)}
 
-/* Resources */
-.vibrant .resource-feature{background:#DDF2F3;border-top:6px solid var(--glacier)}
+/* Resources teaser */
+.vibrant .resource-feature{background:var(--pale-sky);border-top:4px solid var(--cebs-navy)}
 
-/* Join band: wild rose */
-.vibrant .join-band{background:var(--rose)}
-.vibrant .join-inner .eyebrow{color:#FFE3EC}
-.vibrant .join-inner p{color:#FFEFF4}
-.vibrant .join-band .button.light{background:#fff;border-color:#fff;color:var(--rose)}
-.vibrant .join-band .button.light:hover{background:var(--canola);border-color:var(--canola);color:var(--spruce)}
+/* Join band: CEBS orange */
+.vibrant .join-band{background:var(--teal);color:#fff}
+.vibrant .join-inner h2{color:#fff}
+.vibrant .join-inner .eyebrow{color:var(--peach)}
+.vibrant .join-inner p{color:#E3EFF4}
+.vibrant .join-band .button.light{background:var(--orange);border-color:var(--orange);color:var(--ink-dark)}
+.vibrant .join-band .button.light:hover{background:#fff;border-color:#fff;color:var(--ink-dark)}
 
-/* Footer */
-.vibrant footer{background:var(--lake);color:#E6F6F7}
+/* Footer: CEBS navy */
+.vibrant footer{background:var(--cebs-navy);color:#E6EFF8}
 .vibrant footer .wordmark strong{color:#fff}
-.vibrant .footer-main>div>a:not(.wordmark),.vibrant .footer-main>div>p:not(.footer-brand p){color:#CDEDEF}
-.vibrant .footer-main h3{color:var(--canola)}
-.vibrant .footer-bottom{border-color:#2F7480;color:#BFE3E6}
+.vibrant .footer-main>div>a:not(.wordmark),.vibrant .footer-main>div>p:not(.footer-brand p){color:#D2E3F2}
+.vibrant .footer-main h3{color:var(--peach)}
+.vibrant .footer-bottom{border-color:#2B6396;color:#C4D9EC}
+
+/* ---------- Inner pages ---------- */
+.vibrant .event-poster .eyebrow,.vibrant .newsletter-cover .eyebrow,.vibrant .membership-statement .eyebrow,.vibrant .resource-banner .eyebrow{color:var(--peach)}
+
+/* Soft sections: peach */
+.vibrant .soft-section{background:var(--peach)}
+.vibrant .soft-section .eyebrow{color:var(--ink-dark)}
+.vibrant .soft-section h2{color:var(--cebs-navy)}
+.vibrant .soft-section p,.vibrant .soft-section .prose,.vibrant .soft-section .split>div>p,.vibrant .soft-section small,.vibrant .soft-section .resource-row small{color:#3B3A44}
+.vibrant .soft-section .resource-row,.vibrant .designation-tracks article,.vibrant .track-note{border-color:rgba(18,38,63,.3)}
+.vibrant .soft-section .designation-tracks h3{color:var(--cebs-navy)}
+.vibrant .soft-section .designation-tracks p,.vibrant .soft-section .track-note{color:#3B3A44}
+
+/* Membership */
+.vibrant .membership-statement{background:var(--teal)}
+.vibrant .membership-statement p{color:#E8F2F7}
+.vibrant .member-reasons article>span,.vibrant .steps article>span,.vibrant .course-index{color:var(--orange-text)}
+.vibrant .steps article{border-top:3px solid var(--cebs-navy)}
+.vibrant .faq summary>span{color:var(--orange-text)}
+.vibrant .faq details{border-color:#C6D7E6}
+
+/* CEBS page */
+.vibrant .course-list li>strong{color:var(--teal)}
+
+/* Events page */
+.vibrant .event-poster{background:var(--cebs-navy)}
+.vibrant .event-poster:after{border-color:rgba(255,255,255,.3)}
+.vibrant .event-poster h2 em{color:var(--orange)}
+.vibrant .poster-bottom span{color:#D6E5F2}
+.vibrant .tag{background:var(--peach);color:var(--ink-dark);font-weight:600}
+.vibrant .event-row .event-date{background:var(--teal);color:#fff}
+.vibrant .event-row{border-color:#B9CCDD}
+.vibrant .past-event,.vibrant .past-year{border-color:#C6D7E6}
+
+/* Resources + newsletter */
+.vibrant .newsletter-cover{background:var(--teal)}
+.vibrant .newsletter-cover p{color:#E8F2F7}
+.vibrant .filters button{border-color:#9FB6CC}
+.vibrant .filters button[aria-pressed=true]{background:var(--cebs-navy);border-color:var(--cebs-navy);color:#fff}
+.vibrant .resource-item .eyebrow{color:var(--teal)}
+.vibrant .resource-banner{background:var(--cebs-navy)}
+
+/* About */
+.vibrant .about-image:after{background:linear-gradient(90deg,rgba(0,68,124,.6),transparent)}
+.vibrant .board-member .eyebrow{color:var(--teal)}
 
 @media(max-width:650px){
   .vibrant .chapter-strip{grid-template-columns:1fr}
+  .vibrant .cebs-map{grid-template-columns:1fr 1fr 1.25fr;gap:6px}
+  .vibrant .cebs-map .chip{font-size:12px;padding:9px 8px}
   .vibrant .chapter-strip span,.vibrant .chapter-strip span:first-child{padding:14px 20px}
 }
+
+/* ---------- Typography: a weightier serif, less "thin and plain" ---------- */
+body.vibrant{font-family:var(--sans)}
+.vibrant h1,.vibrant h2{font-family:var(--serif);font-weight:600;letter-spacing:-.018em;line-height:1.08}
+.vibrant .event-info h3,.vibrant .event-row-info h3,.vibrant .resource-item h3,.vibrant .board-member h3,.vibrant .designation-tracks h3,.vibrant .newsletter-cover h2,.vibrant .newsletter-cover h3,.vibrant .credential-bottom,.vibrant .photo-caption,.vibrant .image-label,.vibrant .footer-brand p,.vibrant .margin-note,.vibrant .poster-bottom strong,.vibrant .large-number{font-family:var(--serif)}
+.vibrant .event-info h3,.vibrant .event-row-info h3,.vibrant .resource-item h3,.vibrant .board-member h3{font-weight:600;letter-spacing:-.01em}
+.vibrant .big-cebs{font-family:var(--serif);font-weight:700;letter-spacing:-.03em}
+.vibrant .wordmark strong{font-family:var(--sans);font-weight:700;letter-spacing:.005em}
+.vibrant .hero h1{font-weight:600}
+
+/* ---------- Signature: CEBS course map on the Home page card ---------- */
+.vibrant .credential-art{background:var(--cebs-navy)}
+.vibrant .credential-art .big-cebs{margin-block:26px 22px}
+.vibrant .cebs-map{display:grid;grid-template-columns:1fr 1fr 1.3fr;grid-template-rows:auto auto auto;gap:8px;z-index:1;max-width:440px}
+.vibrant .cebs-map .chip{display:flex;align-items:center;justify-content:center;padding:11px 10px;font-size:13px;font-weight:650;letter-spacing:.02em;border-radius:3px;white-space:nowrap}
+.vibrant .cebs-map .gba{background:#22809F;color:#fff}
+.vibrant .cebs-map .rpa{background:var(--orange);color:var(--ink-dark)}
+.vibrant .cebs-map .gba:nth-child(1){grid-column:1;grid-row:1}
+.vibrant .cebs-map .gba:nth-child(2){grid-column:2;grid-row:1}
+.vibrant .cebs-map .rpa:nth-child(4){grid-column:1;grid-row:2}
+.vibrant .cebs-map .rpa:nth-child(5){grid-column:2;grid-row:2}
+.vibrant .cebs-map .shared{grid-column:3;grid-row:1/3;flex-direction:column;gap:2px;background:#fff;color:var(--cebs-navy);position:relative;overflow:hidden}
+.vibrant .cebs-map .shared:before{content:'';position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(var(--teal) 0 50%,var(--orange) 50% 100%)}
+.vibrant .cebs-map .shared small{font-size:10px;font-weight:600;letter-spacing:.06em;color:#4A6076}
+.vibrant .cebs-key{grid-column:1/-1;grid-row:3;display:flex;gap:18px;margin-top:6px;font-size:11px;color:#CFE0EF}
+.vibrant .cebs-key span{display:inline-flex;align-items:center;gap:7px}
+.vibrant .cebs-key span:before{content:'';width:10px;height:10px;border-radius:2px}
+.vibrant .cebs-key .k-gba:before{background:#22809F}
+.vibrant .cebs-key .k-rpa:before{background:var(--orange)}
+
+/* ---------- Same colour meaning on the CEBS page ---------- */
+.vibrant .designation-tracks article:nth-child(1){border-top:4px solid var(--teal)}
+.vibrant .designation-tracks article:nth-child(2){border-top:4px solid var(--orange)}
+.vibrant .soft-section .designation-tracks article:nth-child(1) h3{color:var(--teal)}
+.vibrant .soft-section .designation-tracks article:nth-child(2) h3{color:var(--orange-text)}
+.vibrant .course-list li>strong{display:inline-flex;justify-content:center;align-items:center;min-height:30px;border-radius:3px;font-size:12px}
+.vibrant .course-list li:nth-child(1)>strong,.vibrant .course-list li:nth-child(2)>strong{background:var(--teal);color:#fff}
+.vibrant .course-list li:nth-child(3)>strong{background:#fff;color:var(--cebs-navy);box-shadow:inset 4px 0 0 var(--teal),inset -4px 0 0 var(--orange),inset 0 0 0 1px #B9CCDD}
+.vibrant .course-list li:nth-child(4)>strong,.vibrant .course-list li:nth-child(5)>strong{background:var(--orange);color:var(--ink-dark)}

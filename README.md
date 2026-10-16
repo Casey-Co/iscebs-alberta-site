@@ -1,5 +1,7 @@
 # Alberta Chapter of ISCEBS — website
 
+Design: colour version 3 (CEBS colours, used with meaning — navy = CEBS/chapter, teal = Group Benefits, orange = Retirement Plans; Source Serif 4 + Public Sans). Colours live in `assets/vibrant.css`, layered over the shared `assets/style.css`; the email newsletter uses the same palette in `assets/wix-newsletter-email.js`.
+
 Static HTML/CSS/JavaScript site. No build step, no server, no packages to install.
 `index.html` is the home page. Published with GitHub Pages from the `main` branch (root).
 
