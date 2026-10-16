@@ -183,3 +183,65 @@ body.vibrant{font-family:var(--sans)}
 .vibrant .course-list li:nth-child(1)>strong,.vibrant .course-list li:nth-child(2)>strong{background:var(--teal);color:#fff}
 .vibrant .course-list li:nth-child(3)>strong{background:#fff;color:var(--cebs-navy);box-shadow:inset 4px 0 0 var(--teal),inset -4px 0 0 var(--orange),inset 0 0 0 1px #B9CCDD}
 .vibrant .course-list li:nth-child(4)>strong,.vibrant .course-list li:nth-child(5)>strong{background:var(--orange);color:var(--ink-dark)}
+
+/* ---------- Newsletter issue page ---------- */
+/* Cover: CEBS navy with readable peach label and the navy/teal/orange strip */
+.vibrant .issue-hero{background:var(--cebs-navy);color:#fff;position:relative;border-bottom:10px solid;border-image:linear-gradient(90deg,#003562 0 34%,var(--teal) 34% 67%,var(--orange) 67% 100%) 1}
+.vibrant .issue-hero .eyebrow{color:var(--peach);font-weight:700}
+.vibrant .issue-hero h1{color:#fff}
+.vibrant .issue-hero>p{color:#E6EFF8}
+.vibrant .issue-meta{color:#fff}
+.vibrant .issue-meta:before{content:'';display:block;width:36px;height:3px;background:var(--orange);flex-basis:100%;max-width:36px;margin-bottom:4px}
+.vibrant .issue-draft{color:var(--peach)}
+.vibrant .issue-breadcrumb{color:var(--muted)}
+
+/* In this issue: pale sky bar with orange hover */
+.vibrant .issue-contents{background:var(--pale-sky);border-bottom:0;padding-inline:26px}
+.vibrant .issue-contents>span{color:var(--cebs-navy);font-weight:700}
+.vibrant .issue-contents a{color:var(--ink-dark);text-decoration:none;border-bottom:2px solid transparent}
+.vibrant .issue-contents a:hover{color:var(--teal);border-color:var(--orange)}
+
+/* Sections */
+.vibrant .issue-section{border-color:var(--line)}
+.vibrant .issue-section h2,.vibrant .issue-closing h2{color:var(--cebs-navy)}
+.vibrant .issue-section .eyebrow{color:var(--teal);font-weight:700}
+.vibrant .issue-lead,.vibrant .issue-byline{color:var(--muted)}
+.vibrant .issue-label{color:var(--orange-text)}
+.vibrant .president-message .eyebrow{color:var(--orange-text)}
+.vibrant .issue-president-photo{border-bottom:4px solid var(--orange)}
+
+/* Celebrations: one colour per card */
+.vibrant .achievement-grid article{border-top:4px solid var(--teal)}
+.vibrant .achievement-grid article:nth-child(2){border-top-color:var(--orange)}
+.vibrant .achievement-grid article:nth-child(3){border-top-color:var(--cebs-navy)}
+.vibrant .achievement-grid h3,.vibrant .education-list h3,.vibrant .board-spotlight h3{font-family:var(--serif);font-weight:600;color:var(--cebs-navy)}
+.vibrant .issue-callout{background:var(--peach);border-left:5px solid var(--orange)}
+.vibrant .issue-callout h3{color:var(--cebs-navy)}
+
+/* Education ahead: numbered in orange, dates in teal */
+.vibrant .education-list article{border-color:#B9CCDD}
+.vibrant .education-list article>span{color:var(--orange-text);font-weight:700}
+.vibrant .education-list small{color:var(--teal);font-weight:600}
+
+/* Member spotlight: peach band */
+.vibrant .board-spotlight{background:var(--peach);padding-inline:30px;border-bottom:0}
+.vibrant .board-spotlight .eyebrow{color:var(--orange-text)}
+.vibrant .board-spotlight img{border-bottom:4px solid var(--teal)}
+
+/* Society links: pale sky with navy top rule */
+.vibrant .society-feature{background:var(--pale-sky);border-top:4px solid var(--cebs-navy);border-bottom:0;margin-top:40px}
+.vibrant .society-links a{border-color:#B9CCDD;color:var(--cebs-navy)}
+.vibrant .society-links a:hover{color:var(--teal)}
+
+/* Closing: teal band like the site's join band */
+.vibrant .issue-closing{background:var(--teal);color:#fff;padding:56px 40px;margin:40px 0 64px}
+.vibrant .issue-closing .eyebrow{color:var(--peach)}
+.vibrant .issue-closing h2{color:#fff}
+.vibrant .issue-closing p{color:#E8F2F7}
+.vibrant .issue-closing .text-link{color:#fff;border-color:var(--orange)}
+.vibrant .issue-closing .text-link:hover{color:var(--peach)}
+
+/* Newsletter archive page */
+.vibrant .newsletter-cover .eyebrow{color:var(--peach);font-weight:700}
+.vibrant .newsletter-cover h2,.vibrant .newsletter-cover h3{color:#fff}
+@media(max-width:700px){.vibrant .board-spotlight{padding-inline:20px}.vibrant .issue-closing{padding:40px 22px}.vibrant .issue-contents{padding-inline:18px}}
