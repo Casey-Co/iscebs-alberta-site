@@ -245,3 +245,11 @@ body.vibrant{font-family:var(--sans)}
 .vibrant .newsletter-cover .eyebrow{color:var(--peach);font-weight:700}
 .vibrant .newsletter-cover h2,.vibrant .newsletter-cover h3{color:#fff}
 @media(max-width:700px){.vibrant .board-spotlight{padding-inline:20px}.vibrant .issue-closing{padding:40px 22px}.vibrant .issue-contents{padding-inline:18px}}
+
+/* About page: "Did you know?" callout */
+.did-you-know{display:grid;grid-template-columns:minmax(200px,.6fr) 1.4fr;gap:48px;align-items:start;background:#fff;border:1px solid var(--line);border-top:5px solid var(--orange);padding:44px 48px;max-width:1040px;margin-inline:auto}
+.did-you-know h2{margin:6px 0 0;font-size:clamp(30px,3.4vw,42px)}
+.vibrant .did-you-know h2{color:var(--cebs-navy)}
+.vibrant .did-you-know .eyebrow{color:var(--teal);font-weight:700}
+.did-you-know .dyk-body p{font-size:17px;line-height:1.65;color:var(--muted);max-width:600px;margin:0 0 26px}
+@media(max-width:760px){.did-you-know{grid-template-columns:1fr;gap:14px;padding:30px 24px}}
