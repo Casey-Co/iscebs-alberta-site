@@ -10,7 +10,7 @@ Static HTML/CSS/JavaScript site. No build step, no server, no packages to instal
 | Content | Edited in | Notes |
 |---|---|---|
 | Upcoming events, RSVPs, tickets | **Wix → Events** (headless project) | Every published upcoming event appears on `events.html` automatically. The text under the title is the event's *Short description*. RSVP events: on-page form → Wix guest list (Wix emails confirmation). Ticketed events: choose tickets on the page → Wix secure checkout → back to the Events page. Ended events appear under Past events. |
-| Board members (About page) | **Wix → CMS → Board Members** collection | Sorted by *Display Order*. Photos come **only** from the collection's *Photo* field; a member with no photo uploaded is shown without one. The built-in fallback copy (shown only if Wix can't be reached) has no photos. |
+| Board members (About page) | **Wix → CMS → Board Members** collection | Sorted by *Display Order*. Photos come **only** from the collection's *Photo* field; a member with no photo uploaded is shown without one. Each night the **Sync board from Wix** job copies the board and its photos into `about.html` and `assets/board/`, so photos load from this website even where Wix is blocked (e.g. bank networks). The page also checks Wix live and shows any newer edits straight away. To publish an edit to the saved copy immediately: GitHub → **Actions → Sync board from Wix → Run workflow**. |
 | Newsletter issues | **Wix → CMS → Newsletter Issues** collection | One row per issue (fixed template). "Education ahead" lists upcoming Wix events automatically, each linking to registration (`events.html?register=<eventId>`). `Slug` sets the address: `newsletter-issue.html?issue=<slug>`. Tick `Published` to show it; preview drafts with `&preview=1`. Blank sections are skipped. President and Member Spotlight details (name, role, photo) are entered in each issue; photo fields are Rich content and the first picture is used. `newsletter.html` lists the latest and past issues automatically. |
 | Newsletter by email | **`newsletter-email.html`** (not linked in the menu) | Builds an email-safe copy of any issue from the same CMS row. After publishing, open the page, pick the issue and use *Copy code for Wix* (paste into an HTML element in a Wix Email Marketing campaign), *Copy email for pasting* (Gmail/Outlook) or *Download .html file* (other email tools). When `assets/wix-newsletter-email.js` changes, bump the `?v=` number on its script tag and the "Tool version" note. Layout lives in `assets/wix-newsletter-email.js`. |
 | Everything else (page text, layout, design) | The HTML files in this repository | Edit in GitHub (pencil icon) and commit; the site republishes in a minute or two. |
@@ -20,7 +20,9 @@ Static HTML/CSS/JavaScript site. No build step, no server, no packages to instal
 - Settings are in **`assets/wix-config.js`**: the public OAuth client ID and CMS collection IDs.
 - The client ID is public by design (anonymous visitor, read-only). **Never commit an admin API key or client secret.**
 - `assets/wix-client.js` — shared connection helpers.
-- `assets/wix-board.js` — loads the board onto `about.html`.
+- `assets/wix-board.js` — checks Wix for board edits newer than the saved copy in `about.html`.
+- `assets/wix-board-render.js` — board card markup, shared by the page and the nightly sync.
+- `scripts/sync-board.mjs` + `.github/workflows/sync-board.yml` — nightly copy of the board and photos from Wix into the site (don't edit the board section of `about.html` by hand; it's overwritten). The job writes `.github/last-board-check` monthly so GitHub doesn't pause it.
 - `assets/wix-events.js` — upcoming events, RSVP/tickets and past events on `events.html`.
 - `assets/wix-home-event.js` — the next upcoming event in the home page event box.
 - `assets/wix-newsletter.js` — newsletter issue page and archive.
