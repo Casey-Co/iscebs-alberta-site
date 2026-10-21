@@ -5,7 +5,7 @@
 (() => {
   const settings = window.WIX_SETTINGS || {};
   const API = 'https://www.wixapis.com';
-  let tokenPromise;
+  let tokenPromise, tokenFromStore = false;
 
   const configured = () =>
     Boolean(settings.WIX_CLIENT_ID) && !String(settings.WIX_CLIENT_ID).startsWith('PASTE');
@@ -22,26 +22,58 @@
     return response.json();
   }
 
+  // Small localStorage helpers. Storage can be blocked (private mode, strict settings),
+  // so every read/write is wrapped and the site works the same without it.
+  const store = {
+    get(key) { try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch { return null; } },
+    set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} },
+    drop(key) { try { localStorage.removeItem(key); } catch {} }
+  };
+  const TOKEN_KEY = 'wix-visitor-token';
+
   // Anonymous visitor token: read-only access to public content. No admin keys.
+  // Reused across pages and visits until shortly before it expires, which saves a
+  // round trip to Wix on every page that shows CMS content.
   function getToken() {
     if (!tokenPromise) {
-      tokenPromise = request('/oauth2/token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId: settings.WIX_CLIENT_ID, grantType: 'anonymous' })
-      }).then(t => t.access_token).catch(err => { tokenPromise = null; throw err; });
+      const saved = store.get(TOKEN_KEY);
+      if (saved?.token && saved.client === settings.WIX_CLIENT_ID && saved.expires > Date.now()) {
+        tokenPromise = Promise.resolve(saved.token); tokenFromStore = true;
+      } else {
+        tokenPromise = request('/oauth2/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clientId: settings.WIX_CLIENT_ID, grantType: 'anonymous' })
+        }).then(t => {
+          const life = Number(t.expires_in) || 3600; // seconds
+          store.set(TOKEN_KEY, { token: t.access_token, client: settings.WIX_CLIENT_ID,
+            expires: Date.now() + Math.max(0, life - 300) * 1000 });
+          return t.access_token;
+        }).catch(err => { tokenPromise = null; throw err; });
+      }
     }
     return tokenPromise;
   }
 
-  async function post(path, body) {
+  async function post(path, body, retried = false) {
     const token = await getToken();
-    return request(path, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: token },
-      body: JSON.stringify(body)
-    });
+    try {
+      return await request(path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: token },
+        body: JSON.stringify(body)
+      });
+    } catch (err) {
+      // A saved token Wix no longer accepts: get a fresh one and try once more.
+      // (Only for a saved token, so a genuine refusal is never sent twice.)
+      if (!retried && tokenFromStore && (err.status === 401 || err.status === 403)) {
+        store.drop(TOKEN_KEY); tokenPromise = null; tokenFromStore = false;
+        return post(path, body, true);
+      }
+      throw err;
+    }
   }
+
 
   async function queryCollection(collectionId, sort = []) {
     const result = await post('/wix-data/v2/items/query',
@@ -132,5 +164,5 @@
     return (rich?.nodes || []).map(block).join('');
   }
 
-  window.WixSite = { settings, configured, post, queryCollection, field, esc, safeLink, webLink, imageUrl, richText };
+  window.WixSite = { settings, configured, store, post, queryCollection, field, esc, safeLink, webLink, imageUrl, richText };
 })();
