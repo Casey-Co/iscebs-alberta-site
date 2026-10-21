@@ -20,11 +20,14 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      # Always start from the latest site, even when an old run is re-run.
+      - uses: actions/checkout@v5
         with:
-          node-version: 20
+          ref: main
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
 
       - name: Copy board from Wix
         run: node scripts/sync-board.mjs
@@ -44,4 +47,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
           git commit -m "Board: sync from Wix"
-          git push
+          git pull --rebase origin main
+          git push origin HEAD:main
