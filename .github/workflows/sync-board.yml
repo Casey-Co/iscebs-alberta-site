@@ -1,0 +1,47 @@
+# Copies the board (names, roles, photos) from the Wix CMS into the website every night,
+# so the About page shows photos from this site even where Wix is blocked.
+# To update right away after editing the board in Wix:
+#   GitHub > Actions > "Sync board from Wix" > Run workflow
+name: Sync board from Wix
+
+on:
+  schedule:
+    - cron: '17 8 * * *' # daily, about 2:17 a.m. Edmonton (1:17 a.m. in winter)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-board
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Copy board from Wix
+        run: node scripts/sync-board.mjs
+
+      # GitHub pauses scheduled jobs after 60 days with no activity in the repository.
+      # A one-line note on the 1st of each month keeps this job running when the board
+      # hasn't changed for a while.
+      - name: Monthly keep-alive
+        if: github.event_name == 'schedule'
+        run: |
+          if [ "$(date -u +%d)" = "01" ]; then date -u +%F > .github/last-board-check; fi
+
+      - name: Save changes
+        run: |
+          git add -A about.html assets/board .github
+          if git diff --cached --quiet; then echo "Board unchanged."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Board: sync from Wix"
+          git push
