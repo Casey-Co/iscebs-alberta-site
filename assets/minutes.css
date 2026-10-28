@@ -1,0 +1,29 @@
+.minutes-archive{padding-bottom:80px}
+.minutes-year{display:grid;grid-template-columns:140px 1fr;gap:40px;border-top:1px solid var(--line);padding-block:34px}
+.minutes-year>h2{color:var(--cebs-navy);font-size:40px}
+.minutes-card{padding:0 0 28px;margin-bottom:28px;border-bottom:1px solid var(--line)}
+.minutes-card:last-child{border:0;padding-bottom:0;margin-bottom:0}
+.minutes-card time{display:block;font-size:14px;color:var(--muted);margin-bottom:8px}
+.minutes-card h3{font-family:var(--serif);font-size:30px;color:var(--cebs-navy)}
+.minutes-card h3 a:hover{text-decoration:underline}
+.minutes-card p{color:var(--muted);margin-bottom:18px}
+.minutes-status{padding-block:30px 90px;min-height:240px}
+.minutes-status .button{margin-bottom:24px}
+.minutes-reader{max-width:920px;padding-block:48px 88px}
+.minutes-back{margin-bottom:42px}
+.minutes-reader>h1{font-size:clamp(36px,5vw,58px);color:var(--cebs-navy);overflow-wrap:anywhere}
+.minutes-meta{display:flex;flex-wrap:wrap;gap:8px 26px;color:var(--muted);padding-bottom:28px;border-bottom:1px solid var(--line)}
+.minutes-body{font-size:17px;line-height:1.85;color:var(--ink);overflow-wrap:anywhere}
+.minutes-body h2,.minutes-body h3,.minutes-body h4,.minutes-body h5,.minutes-body h6{font-family:var(--sans);font-weight:650;font-size:22px;line-height:1.4;letter-spacing:normal;margin:32px 0 14px;color:var(--cebs-navy)}
+.minutes-body h3,.minutes-body h4,.minutes-body h5,.minutes-body h6{font-size:19px}
+.minutes-body p{margin-bottom:18px}
+.minutes-body a{text-decoration:underline;text-underline-offset:3px}
+.minutes-body ul,.minutes-body ol{padding-left:26px}
+.minutes-body li{margin-bottom:8px}
+.minutes-body blockquote{border-left:3px solid var(--cebs-navy);margin:24px 0;padding-left:22px}
+.minutes-body table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin-block:24px}
+.minutes-body td,.minutes-body th{border:1px solid var(--line);padding:10px 14px;text-align:left;min-width:100px}
+.minutes-body th{background:var(--pale-sky)}
+.minutes-resource{padding-top:0}
+.minutes-resource>div{border-top:1px solid var(--line);padding-top:36px;max-width:760px}
+@media(max-width:650px){.minutes-year{grid-template-columns:1fr;gap:12px;padding-block:24px}.minutes-year>h2{font-size:30px;margin-bottom:8px}.minutes-card h3{font-size:25px}.minutes-reader{padding-top:30px}.minutes-back{margin-bottom:32px}.minutes-archive{padding-bottom:48px}}
