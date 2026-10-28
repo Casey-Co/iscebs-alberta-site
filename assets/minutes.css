@@ -24,8 +24,7 @@
 .minutes-body table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin-block:24px}
 .minutes-body td,.minutes-body th{border:1px solid var(--line);padding:10px 14px;text-align:left;min-width:100px}
 .minutes-body th{background:var(--pale-sky)}
-.resource-directory{padding-bottom:28px}
-.resource-directory #resource-count{margin-bottom:0}
+.resource-directory{padding-bottom:0}
 .minutes-resource{padding-top:0}
-.minutes-resource>div{border-top:1px solid var(--line);padding-top:36px;max-width:760px}
+.minutes-resource>div{padding-top:24px;max-width:760px}
 @media(max-width:650px){.minutes-year{grid-template-columns:1fr;gap:12px;padding-block:24px}.minutes-year>h2{font-size:30px;margin-bottom:8px}.minutes-card h3{font-size:25px}.minutes-reader{padding-top:30px}.minutes-back{margin-bottom:32px}.minutes-archive{padding-bottom:48px}}
