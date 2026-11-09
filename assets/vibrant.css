@@ -66,7 +66,6 @@ body.vibrant{background:var(--page);color:var(--ink-dark)}
 .vibrant .credential-section .prose{color:#3B3A44}
 .vibrant .credential-art{background:var(--cebs-navy)}
 .vibrant .credential-art:after{display:none}
-.vibrant .credential-lines{color:#CFE4F5}
 .vibrant .credential-bottom{color:var(--peach)}
 
 /* Home events teaser */
@@ -94,7 +93,7 @@ body.vibrant{background:var(--page);color:var(--ink-dark)}
 .vibrant .footer-bottom{border-color:#2B6396;color:#C4D9EC}
 
 /* ---------- Inner pages ---------- */
-.vibrant .event-poster .eyebrow,.vibrant .newsletter-cover .eyebrow,.vibrant .membership-statement .eyebrow,.vibrant .resource-banner .eyebrow{color:var(--peach)}
+.vibrant .event-poster .eyebrow,.vibrant .newsletter-cover .eyebrow,.vibrant .membership-statement .eyebrow{color:var(--peach)}
 
 /* Soft sections: peach */
 .vibrant .soft-section{background:var(--peach)}
@@ -132,7 +131,6 @@ body.vibrant{background:var(--page);color:var(--ink-dark)}
 .vibrant .filters button{border-color:#9FB6CC}
 .vibrant .filters button[aria-pressed=true]{background:var(--cebs-navy);border-color:var(--cebs-navy);color:#fff}
 .vibrant .resource-item .eyebrow{color:var(--teal)}
-.vibrant .resource-banner{background:var(--cebs-navy)}
 
 /* About */
 .vibrant .about-image:after{background:linear-gradient(90deg,rgba(0,68,124,.6),transparent)}
@@ -148,7 +146,7 @@ body.vibrant{background:var(--page);color:var(--ink-dark)}
 /* ---------- Typography: a weightier serif, less "thin and plain" ---------- */
 body.vibrant{font-family:var(--sans)}
 .vibrant h1,.vibrant h2{font-family:var(--serif);font-weight:600;letter-spacing:-.018em;line-height:1.08}
-.vibrant .event-info h3,.vibrant .event-row-info h3,.vibrant .resource-item h3,.vibrant .board-member h3,.vibrant .designation-tracks h3,.vibrant .newsletter-cover h2,.vibrant .newsletter-cover h3,.vibrant .credential-bottom,.vibrant .photo-caption,.vibrant .image-label,.vibrant .footer-brand p,.vibrant .margin-note,.vibrant .poster-bottom strong,.vibrant .large-number{font-family:var(--serif)}
+.vibrant .event-info h3,.vibrant .event-row-info h3,.vibrant .resource-item h3,.vibrant .board-member h3,.vibrant .designation-tracks h3,.vibrant .newsletter-cover h2,.vibrant .newsletter-cover h3,.vibrant .credential-bottom,.vibrant .photo-caption,.vibrant .image-label,.vibrant .footer-brand p,.vibrant .margin-note,.vibrant .poster-bottom strong{font-family:var(--serif)}
 .vibrant .event-info h3,.vibrant .event-row-info h3,.vibrant .resource-item h3,.vibrant .board-member h3{font-weight:600;letter-spacing:-.01em}
 .vibrant .big-cebs{font-family:var(--serif);font-weight:700;letter-spacing:-.03em}
 .vibrant .wordmark strong{font-family:var(--sans);font-weight:700;letter-spacing:.005em}
@@ -206,7 +204,6 @@ body.vibrant{font-family:var(--sans)}
 .vibrant .issue-section h2,.vibrant .issue-closing h2{color:var(--cebs-navy)}
 .vibrant .issue-section .eyebrow{color:var(--teal);font-weight:700}
 .vibrant .issue-lead,.vibrant .issue-byline{color:var(--muted)}
-.vibrant .issue-label{color:var(--orange-text)}
 .vibrant .president-message .eyebrow{color:var(--orange-text)}
 .vibrant .issue-president-photo{border-bottom:4px solid var(--orange)}
 
