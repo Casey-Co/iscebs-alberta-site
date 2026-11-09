@@ -23,7 +23,7 @@
   const { esc, field, imageUrl, safeLink, settings } = W || {};
   const params = new URLSearchParams(location.search);
   const preview = params.get('preview') === '1';
-  const CONTACT = 'ab.iscebs@gmail.com';
+  const { chapterEmail: CONTACT, iscebsWebcasts } = settings?.PUBLIC_SETTINGS || {};
 
   // ---------- Helpers ----------
   const slugify = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -215,7 +215,7 @@
         <h2>${esc(f('societyHeading') || 'Keep the learning going.')}</h2>
         <p>${text(f('societyIntro') || 'Your Alberta Chapter is one part of a wider professional community. Explore the International Society’s webcasts, news and peer conversations alongside our local education and events.')}</p>
       </div><div class="society-links">
-        <a href="https://www.iscebs.org/home/education---resources/webcasts" target="_blank" rel="noopener noreferrer"><strong>ISCEBS webcasts ↗</strong><span>Explore current and recorded education.</span></a>
+        <a href="${esc(iscebsWebcasts)}" target="_blank" rel="noopener noreferrer"><strong>ISCEBS webcasts ↗</strong><span>Explore current and recorded education.</span></a>
         <a href="https://www.iscebs.org/home/education---resources/newsbriefs" target="_blank" rel="noopener noreferrer"><strong>Society NewsBriefs ↗</strong><span>Read news from the Society and its chapters.</span></a>
         <a href="https://www.iscebs.org/membership/iscebslink" target="_blank" rel="noopener noreferrer"><strong>ISCEBSLink ↗</strong><span>Connect with peers in the Society member forum.</span></a>
         <p class="small-note">Some resources require Society membership and sign-in.</p>
@@ -264,7 +264,7 @@
 
   // ---------- Start ----------
   if (!W || !W.configured()) {
-    if (issueRoot) issueMessage('Newsletter unavailable', `Please try again later, or email <a href="mailto:${CONTACT}">${CONTACT}</a>.`);
+    if (issueRoot) issueMessage('Newsletter unavailable', 'Please try again later or use the chapter contact link below.');
     return;
   }
 

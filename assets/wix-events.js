@@ -18,7 +18,8 @@
   const root = document.querySelector('[data-wix-events]');
   if (!root) return;
   const { esc, safeLink } = W || {};
-  const CONTACT = '<a href="mailto:ab.iscebs@gmail.com">ab.iscebs@gmail.com</a>';
+  const email = W?.settings.PUBLIC_SETTINGS?.chapterEmail;
+  const CONTACT = email ? `<a href="mailto:${esc(email)}">${esc(email)}</a>` : 'the chapter';
   const tz = event => event.dateAndTimeSettings?.timeZoneId || 'America/Edmonton';
   const events = new Map();
 

@@ -7,21 +7,15 @@
 // If Wix can't be reached or returns no board members, nothing is changed.
 import { readFile, writeFile, mkdir, readdir, unlink, access } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import vm from 'node:vm';
 import path from 'node:path';
+import { loadWix, ROOT } from './wix.mjs';
 
-const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const PAGE = path.join(ROOT, 'about.html');
 const PHOTO_DIR = path.join(ROOT, 'assets', 'board');
 const PHOTO_URL = 'assets/board/';
 
 // Load the website's own Wix helpers and card markup, so output matches the live page exactly.
-const window = {};
-const context = vm.createContext({ window, fetch, AbortSignal, URL, console, Promise, JSON, Date });
-for (const f of ['wix-config.js', 'wix-client.js', 'wix-board-render.js']) {
-  vm.runInContext(await readFile(path.join(ROOT, 'assets', f), 'utf8'), context, { filename: f });
-}
-const W = window.WixSite, R = window.BoardRender;
+const { WixSite: W, BoardRender: R } = await loadWix('wix-board-render.js');
 if (!W.configured()) { console.log('Wix is not configured; nothing to do.'); process.exit(0); }
 
 const items = await W.queryCollection(W.settings.COLLECTIONS.boardMembers, [{ fieldName: 'displayOrder', order: 'ASC' }]);

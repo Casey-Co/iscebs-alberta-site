@@ -1,6 +1,6 @@
 /*
   About page: "Meet the Board" section.
-  Editors: Wix > CMS > Board Members (sorted by "Display Order") and Board Year.
+  Editors: Wix > CMS > Board Members. The heading year is synced from Website Settings.
 
   How it loads:
   1. about.html already contains the board, photos included, saved from Wix each night
@@ -12,22 +12,9 @@
 */
 (() => {
   const W = window.WixSite, R = window.BoardRender;
-  if (!W?.configured()) return;
-
-  const heading = document.getElementById('board-heading');
-  const yearCollection = W.settings.COLLECTIONS?.boardYear;
-  if (heading && yearCollection) {
-    W.queryCollection(yearCollection).then(([item]) => {
-      const year = item?.number;
-      if (Number.isInteger(year) && year >= 1000 && year <= 9999) {
-        heading.textContent = `Meet the ${year} Board`;
-      }
-    }).catch(err => console.warn('Board year: Wix not reached; showing heading without a year.', err));
-  }
-
   const grid = document.querySelector('[data-wix-board]');
-  const collection = W.settings.COLLECTIONS?.boardMembers;
-  if (!R || !grid || !collection) return;
+  const collection = W?.settings.COLLECTIONS?.boardMembers;
+  if (!W || !R || !grid || !collection || !W.configured()) return;
 
   // Photos already saved on this website, by Wix photo.
   const saved = {};

@@ -17,7 +17,7 @@
   const root = document.querySelector('[data-email-tool]');
   if (!root) return;
   const { esc, field, imageUrl } = W || {};
-  const CONTACT = 'ab.iscebs@gmail.com';
+  const { chapterEmail: CONTACT, chapterLinkedIn, iscebsWebcasts } = W?.settings.PUBLIC_SETTINGS || {};
   // Absolute links back to this website, wherever it is hosted.
   const SITE = new URL('.', location.href).href;
   const abs = p => new URL(p, SITE).href;
@@ -216,7 +216,7 @@
         ${h2(esc(f('societyHeading') || 'Keep the learning going.'))}
         <p style="${P_STYLE}">${text(f('societyIntro') || 'Your Alberta Chapter is one part of a wider professional community. Explore the International Society’s webcasts, news and peer conversations alongside our local education and events.')}</p>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-          ${link('ISCEBS webcasts', 'https://www.iscebs.org/home/education---resources/webcasts', 'Explore current and recorded education.')}
+          ${link('ISCEBS webcasts', esc(iscebsWebcasts), 'Explore current and recorded education.')}
           ${link('Society NewsBriefs', 'https://www.iscebs.org/home/education---resources/newsbriefs', 'Read news from the Society and its chapters.')}
           ${link('ISCEBSLink', 'https://www.iscebs.org/membership/iscebslink', 'Connect with peers in the Society member forum.')}
         </table>
@@ -256,7 +256,7 @@
   <tr><td bgcolor="${C.navy}" style="background:${C.navy};padding:28px 26px;font-family:${SANS};font-size:12px;line-height:20px;color:#E6EFF8;" class="email-pad">
     <p style="margin:0 0 10px;font-family:${SERIF};font-size:18px;line-height:24px;font-weight:600;color:#ffffff;">Knowledge shared. Connections made. Careers strengthened.</p>
     <p style="margin:0 0 6px;">Alberta Chapter · International Society of Certified Employee Benefit Specialists</p>
-    <p style="margin:0;"><a href="mailto:${CONTACT}" style="color:#D2E3F2;">${CONTACT}</a> &nbsp;·&nbsp; <a href="${abs('index.html')}" style="color:#D2E3F2;">Chapter website</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/company/94094639/" style="color:#D2E3F2;">LinkedIn</a></p></td></tr>
+    <p style="margin:0;"><a href="mailto:${CONTACT}" style="color:#D2E3F2;">${CONTACT}</a> &nbsp;·&nbsp; <a href="${abs('index.html')}" style="color:#D2E3F2;">Chapter website</a> &nbsp;·&nbsp; <a href="${esc(chapterLinkedIn)}" style="color:#D2E3F2;">LinkedIn</a></p></td></tr>
 </table></td></tr></table></body></html>`;
   }
 

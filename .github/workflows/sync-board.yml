@@ -1,8 +1,5 @@
-# Copies the board (names, roles, photos) from the Wix CMS into the website every night,
-# so the About page shows photos from this site even where Wix is blocked.
-# To update right away after editing the board in Wix:
-#   GitHub > Actions > "Sync board from Wix" > Run workflow
-name: Sync board from Wix
+# Publishes Website Settings and a saved copy of the board from Wix each night.
+name: Sync website from Wix
 
 on:
   schedule:
@@ -11,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  pages: write
 
 concurrency:
   group: sync-board
@@ -29,7 +27,13 @@ jobs:
         with:
           node-version: 24
 
+      - name: Copy Website Settings from Wix
+        id: settings
+        run: node scripts/sync-settings.mjs
+
       - name: Copy board from Wix
+        if: ${{ !cancelled() }}
+        id: board
         run: node scripts/sync-board.mjs
 
       # GitHub pauses scheduled jobs after 60 days with no activity in the repository.
@@ -41,11 +45,23 @@ jobs:
           if [ "$(date -u +%d)" = "01" ]; then date -u +%F > .github/last-board-check; fi
 
       - name: Save changes
+        if: ${{ !cancelled() && (steps.settings.outcome == 'success' || steps.board.outcome == 'success') }}
+        id: save
         run: |
-          git add -A about.html assets/board .github
-          if git diff --cached --quiet; then echo "Board unchanged."; exit 0; fi
+          git add -A -- '*.html' assets/wix-config.js assets/board .github/last-board-check
+          if git diff --cached --quiet; then echo "Website content unchanged."; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Board: sync from Wix"
+          git commit -m "Website: sync content from Wix"
           git pull --rebase origin main
           git push origin HEAD:main
+
+      - name: Request GitHub Pages build
+        if: ${{ !cancelled() && steps.save.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          built=$(gh api "repos/$GITHUB_REPOSITORY/pages/builds/latest" --jq 'select(.status == "built") | .commit')
+          if [ "$built" != "$(git rev-parse HEAD)" ]; then
+            gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds" --silent
+          fi
