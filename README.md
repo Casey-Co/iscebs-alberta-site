@@ -42,7 +42,6 @@ Static HTML/CSS/JavaScript site. No build step, no server, no packages to instal
 
 - `newsletter-email.html` is the unlisted, `noindex` email builder.
 - `newsletter-january-2027.html` redirects older links to the January 2027 issue.
-- `home-vibrant.html` redirects older homepage links to the current homepage.
 
 ## Domain cutover and sharing
 
