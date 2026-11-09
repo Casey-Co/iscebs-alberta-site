@@ -17,6 +17,7 @@ window.WIX_SETTINGS = {
     boardMembers: 'Import2', // "Board Members" collection
     websiteSettings: 'Import4', // "Website Settings" collection
     resources: 'Import5', // "Resources" collection
+    membershipFaq: 'Import6', // "MembershipFAQ" collection
     newsletterIssues: 'Import3', // "Newsletter Issues" collection
     agmMinutes: 'AGMMinutes' // "AGM Minutes" collection (all saved entries are public)
   }

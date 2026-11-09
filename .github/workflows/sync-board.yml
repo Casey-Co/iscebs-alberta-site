@@ -1,4 +1,4 @@
-# Publishes Website Settings, Resources, and a saved copy of the board from Wix each night.
+# Publishes Website Settings, Resources, Membership FAQs, and the board from Wix each night.
 name: Sync website from Wix
 
 on:
@@ -41,6 +41,11 @@ jobs:
         id: resources
         run: node scripts/sync-resources.mjs
 
+      - name: Copy Membership FAQs from Wix
+        if: ${{ !cancelled() }}
+        id: membership_faq
+        run: node scripts/sync-membership-faq.mjs
+
       # GitHub pauses scheduled jobs after 60 days with no activity in the repository.
       # A one-line note on the 1st of each month keeps this job running when the board
       # hasn't changed for a while.
@@ -50,7 +55,7 @@ jobs:
           if [ "$(date -u +%d)" = "01" ]; then date -u +%F > .github/last-board-check; fi
 
       - name: Save changes
-        if: ${{ !cancelled() && (steps.settings.outcome == 'success' || steps.board.outcome == 'success' || steps.resources.outcome == 'success') }}
+        if: ${{ !cancelled() && (steps.settings.outcome == 'success' || steps.board.outcome == 'success' || steps.resources.outcome == 'success' || steps.membership_faq.outcome == 'success') }}
         id: save
         run: |
           git add -A -- '*.html' assets/wix-config.js assets/board .github/last-board-check
