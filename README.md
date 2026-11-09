@@ -41,7 +41,6 @@ Static HTML/CSS/JavaScript site. No build step, no server, no packages to instal
 ## Utility pages and redirects
 
 - `newsletter-email.html` is the unlisted, `noindex` email builder.
-- `newsletter-january-2027.html` redirects older links to the January 2027 issue.
 
 ## Domain cutover and sharing
 
