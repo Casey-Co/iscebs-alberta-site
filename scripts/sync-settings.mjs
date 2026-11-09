@@ -34,7 +34,8 @@ for (const [name, field] of Object.entries(urlFields)) {
 const publicSettings = {
   chapterEmail,
   chapterLinkedIn: urls.chapterLinkedIn,
-  iscebsWebcasts: urls.iscebsWebcasts
+  iscebsWebcasts: urls.iscebsWebcasts,
+  canadianCebs: urls.canadianCebs
 };
 const configFile = path.join(ROOT, 'assets/wix-config.js');
 const config = await readFile(configFile, 'utf8');

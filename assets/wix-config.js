@@ -12,10 +12,11 @@
 window.WIX_SETTINGS = {
   WIX_CLIENT_ID: 'a32b1e07-fe9f-489b-862f-11d1e30287d0',
   // Published by scripts/sync-settings.mjs from Wix > CMS > Website Settings.
-  PUBLIC_SETTINGS: {"chapterEmail":"ab.iscebs@gmail.com","chapterLinkedIn":"https://www.linkedin.com/company/94094639/","iscebsWebcasts":"https://www.iscebs.org/home/education---resources/webcasts"},
+  PUBLIC_SETTINGS: {"chapterEmail":"ab.iscebs@gmail.com","chapterLinkedIn":"https://www.linkedin.com/company/94094639/","iscebsWebcasts":"https://www.iscebs.org/home/education---resources/webcasts","canadianCebs":"https://www.ifebp.org/cebs/home/courses-and-materials/courses---canada"},
   COLLECTIONS: {
     boardMembers: 'Import2', // "Board Members" collection
     websiteSettings: 'Import4', // "Website Settings" collection
+    resources: 'Import5', // "Resources" collection
     newsletterIssues: 'Import3', // "Newsletter Issues" collection
     agmMinutes: 'AGMMinutes' // "AGM Minutes" collection (all saved entries are public)
   }
