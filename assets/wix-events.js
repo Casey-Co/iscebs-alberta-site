@@ -10,8 +10,7 @@
     checkout, then return to this page. Requires payments set up in Wix.
   - Past events: every event that has ended, grouped by year.
 
-  If Wix can't be reached, the event built into events.html is shown until the
-  date in its data-show-until attribute, then a general "check back" message.
+  If Wix can't be reached, visitors see a message and a chapter contact link.
 */
 (() => {
   const W = window.WixSite;
@@ -347,11 +346,9 @@
       <p>There are no upcoming chapter events scheduled right now. Check back soon, or email ${CONTACT} to hear about the next one.</p>
     </section>`;
 
+  const status = root.querySelector('[data-event-status]');
   function fallback() {
-    const until = Date.parse(root.dataset.showUntil || '');
-    if (!until || Date.now() > until) { root.innerHTML = none; return; }
-    const status = root.querySelector('[data-registration-status]');
-    if (status) status.innerHTML = `We couldn’t load live registration details. Please refresh the page, or email ${CONTACT} for help.`;
+    if (status) status.textContent = 'We couldn’t load upcoming events. Please refresh the page or contact the chapter for help.';
   }
 
   // ---------- Past events ----------
@@ -396,6 +393,7 @@
   // ---------- Start ----------
   purchaseNotice();
   if (!W || !W.configured()) { fallback(); return; }
+  if (status) status.textContent = 'Loading upcoming events…';
   loadPast();
 
   W.post('/events/v3/events/query', {
@@ -416,5 +414,5 @@
       card?.scrollIntoView({ block: 'start' });
       if (new URLSearchParams(location.search).get('register')) card?.querySelector('[data-open]')?.click();
     }
-  }).catch(err => { console.warn('Events: showing built-in copy.', err); fallback(); });
+  }).catch(err => { console.warn('Events: could not load upcoming events from Wix.', err); fallback(); });
 })();
