@@ -10,7 +10,7 @@ Static HTML/CSS/JavaScript site. No build step, no server, no packages to instal
 | Content | Edited in | Notes |
 |---|---|---|
 | Upcoming events, RSVPs, tickets | **Wix → Events** (headless project) | Every published upcoming event appears on `events.html` automatically. The text under the title is the event's *Short description*. RSVP events: on-page form → Wix guest list (Wix emails confirmation). Ticketed events: choose tickets on the page → Wix secure checkout → back to the Events page. Ended events appear under Past events. |
-| Chapter email, board year, and shared links | **Wix → CMS → Website Settings** collection (`Import4`) | Edit the single row. The job publishes these settings into the site each night. To publish sooner, use GitHub → **Actions → Sync website from Wix → Run workflow**. |
+| Chapter email, board year, and shared links | **Wix → CMS → Website Settings** collection (`Import4`) | Edit and save the single row. Each page checks Wix for the latest board year, email and shared links when it opens. The nightly job keeps the saved HTML and configuration current as a fallback. |
 | Resource cards and categories | **Wix → CMS → Resources** collection (`Import5`) | Edit, add, or remove rows. Display Order sets the card order and Category supplies the filters. Enter an HTTPS Resource URL for regular cards. For ISCEBS webcasts and Canadian CEBS courses, leave Resource URL blank and use the existing Website Settings Link value. The same nightly job publishes the directory. |
 | Membership questions | **Wix → CMS → MembershipFAQ** collection (`Import6`) | Title is the question. Edit the Answer as plain text and use Display Order to arrange questions. In an answer, `{{chapterEmail}}` inserts the chapter's linked email address from Website Settings. The same nightly job publishes the FAQs. |
 | Board members (About page) | **Wix → CMS → Board Members** collection | Sorted by *Display Order*. Photos come **only** from the collection's *Photo* field; a member with no photo uploaded is shown without one. The same nightly job copies the board and its photos into `about.html` and `assets/board/`, so photos load from this website even where Wix is blocked (e.g. bank networks). The page also checks Wix live for newer roster edits. |
@@ -23,11 +23,11 @@ Static HTML/CSS/JavaScript site. No build step, no server, no packages to instal
 
 - Settings are in **`assets/wix-config.js`**: the public OAuth client ID and CMS collection IDs.
 - The client ID is public by design (anonymous visitor, read-only). **Never commit an admin API key or client secret.**
-- `assets/wix-client.js` — shared connection helpers.
+- `assets/wix-client.js` — shared connection helpers and live Website Settings. Pages that build event or newsletter content wait for `settingsReady` before using the shared email and links.
 - `assets/wix-board.js` — checks Wix for board edits newer than the saved copy in `about.html`.
 - `assets/wix-board-render.js` — board card markup, shared by the page and the nightly sync.
 - **Nightly sync:** `.github/workflows/sync-board.yml` publishes Website Settings, Resources, Membership FAQs, and a saved copy of the board roster and photos. Links marked with `data-site-link` or `data-site-email` are managed by Website Settings. The job writes `.github/last-board-check` monthly so GitHub doesn't pause it.
-- **Live from Wix:** Events, newsletter issues and the email builder, and AGM minutes. The About page also checks Wix live for board updates. If Wix Events is unavailable, visitors see a chapter contact link.
+- **Live from Wix:** Website Settings, Events, newsletter issues and the email builder, and AGM minutes. The About page also checks Wix live for board updates. If Wix Events is unavailable, visitors see a chapter contact link.
 - `assets/wix-events.js` — upcoming events, RSVP/tickets and past events on `events.html`.
 - `assets/wix-home-event.js` — the next upcoming event in the home page event box.
 - `assets/wix-newsletter.js` — newsletter issue page and archive.

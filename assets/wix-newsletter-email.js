@@ -12,10 +12,11 @@
   Email programs ignore most website styling, so this file uses simple tables and
   inline styles on purpose. It mirrors the sections of the website issue page.
 */
-(() => {
+(async () => {
   const W = window.WixSite;
   const root = document.querySelector('[data-email-tool]');
   if (!root) return;
+  await W?.settingsReady;
   const { esc, field, imageUrl } = W || {};
   const { chapterEmail: CONTACT, chapterLinkedIn, iscebsWebcasts } = W?.settings.PUBLIC_SETTINGS || {};
   // Absolute links back to this website, wherever it is hosted.

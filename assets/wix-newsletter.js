@@ -15,11 +15,12 @@
 
   Pages: newsletter.html (latest issue + archive) and newsletter-issue.html (one issue).
 */
-(() => {
+(async () => {
   const W = window.WixSite;
   const issueRoot = document.querySelector('[data-issue-root]');
   const archiveRoot = document.querySelector('[data-newsletter-archive]');
   if (!issueRoot && !archiveRoot) return;
+  await W?.settingsReady;
   const { esc, field, imageUrl, safeLink, settings } = W || {};
   const params = new URLSearchParams(location.search);
   const preview = params.get('preview') === '1';

@@ -12,10 +12,11 @@
 
   If Wix can't be reached, visitors see a message and a chapter contact link.
 */
-(() => {
+(async () => {
   const W = window.WixSite;
   const root = document.querySelector('[data-wix-events]');
   if (!root) return;
+  await W?.settingsReady;
   const { esc, safeLink } = W || {};
   const email = W?.settings.PUBLIC_SETTINGS?.chapterEmail;
   const CONTACT = email ? `<a href="mailto:${esc(email)}">${esc(email)}</a>` : 'the chapter';

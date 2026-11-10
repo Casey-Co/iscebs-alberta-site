@@ -164,5 +164,54 @@
     return (rich?.nodes || []).map(block).join('');
   }
 
+  // Website Settings refresh on each page load. The saved HTML and configuration
+  // stay visible if Wix is unavailable or a field contains an invalid value.
+  const publicSettings = settings.PUBLIC_SETTINGS ||= {};
+
+  async function refreshSettings() {
+    if (!configured() || !settings.COLLECTIONS?.websiteSettings) return publicSettings;
+    try {
+      const rows = await queryCollection(settings.COLLECTIONS.websiteSettings);
+      if (rows.length !== 1) return publicSettings;
+      const row = rows[0];
+      const year = String(field(row, 'boardYear')).trim();
+      const email = String(field(row, 'chapterEmail')).trim();
+      if (/^[1-9]\d{3}$/.test(year)) publicSettings.boardYear = year;
+      if (/^[\w.+-]+@(?:[a-z0-9-]+\.)+[a-z]{2,}$/i.test(email)) publicSettings.chapterEmail = email;
+
+      const urlFields = {
+        membership: 'membershipJoinAndRenewURL',
+        canadianCebs: 'canadianCEBSCoursesURL',
+        chapterLinkedIn: 'chapterLinkedInURL',
+        iscebsWebsite: 'iSCEBSWebsiteURL',
+        iscebsWebcasts: 'iSCEBSWebcastsURL'
+      };
+      for (const [name, key] of Object.entries(urlFields)) {
+        try {
+          const url = new URL(String(field(row, key)).trim());
+          if (url.protocol === 'https:' && !url.username && !url.password) publicSettings[name] = url.href;
+        } catch { /* Keep the saved destination for an invalid URL. */ }
+      }
+
+      const heading = document.getElementById('board-heading');
+      if (heading && publicSettings.boardYear) heading.textContent = `Meet the ${publicSettings.boardYear} Board`;
+      document.querySelectorAll('[data-site-link]').forEach(link => {
+        const url = publicSettings[link.dataset.siteLink];
+        if (url) link.setAttribute('href', url);
+      });
+      if (publicSettings.chapterEmail) {
+        document.querySelectorAll('[data-site-email]').forEach(link => {
+          const href = link.getAttribute('href') || 'mailto:';
+          link.setAttribute('href', href.replace(/^mailto:[^?]*/i, 'mailto:' + publicSettings.chapterEmail));
+          if (link.dataset.siteEmail === 'address') link.textContent = publicSettings.chapterEmail;
+        });
+      }
+    } catch { /* The overnight copy remains available when Wix cannot be reached. */ }
+    return publicSettings;
+  }
+
   window.WixSite = { settings, configured, store, post, queryCollection, field, esc, safeLink, webLink, imageUrl, richText };
+  // The sync scripts load this file without a document and query Wix themselves.
+  window.WixSite.settingsReady = typeof document === 'undefined'
+    ? Promise.resolve(publicSettings) : refreshSettings();
 })();
