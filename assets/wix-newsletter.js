@@ -157,6 +157,19 @@
       </div><div class="prose">${presMessage}</div></section>`);
     }
 
+    // Optional article. Wix rich-text fields may contain empty paragraph markup.
+    const articleHeadingHtml = rich(f('articleHeading'));
+    const articleBodyHtml = rich(f('articleBody'));
+    const articleHeading = new DOMParser().parseFromString(articleHeadingHtml, 'text/html').body.textContent.replace(/\s+/g, ' ').trim();
+    const hasArticleBody = new DOMParser().parseFromString(articleBodyHtml, 'text/html').body.textContent.trim();
+    if (articleHeading || hasArticleBody) {
+      contents.push(['article', articleHeading || 'Chapter update']);
+      sections.push(`<section id="article" class="issue-section">
+        ${articleHeading ? `<h2>${esc(articleHeading)}</h2>` : ''}
+        ${hasArticleBody ? `<div class="prose">${articleBodyHtml}</div>` : ''}
+      </section>`);
+    }
+
     // Celebrations
     const cards = [
       ['New CEBS graduates', rich(f('cebsGraduates'))],

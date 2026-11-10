@@ -159,6 +159,15 @@
         <p style="margin:0;font-family:${SANS};font-size:14px;line-height:22px;color:${C.muted};">${esc(pres.name)}${f('presidentRole') ? `<br>${text(f('presidentRole'))}` : ''}</p>`)}
       ${presMessage}`));
 
+    // Use the same optional article and empty-rich-text rules as the website.
+    const articleHeadingHtml = emailRich(f('articleHeading'));
+    const articleBodyHtml = emailRich(f('articleBody'));
+    const articleHeading = new DOMParser().parseFromString(articleHeadingHtml, 'text/html').body.textContent.replace(/\s+/g, ' ').trim();
+    const hasArticleBody = new DOMParser().parseFromString(articleBodyHtml, 'text/html').body.textContent.trim();
+    if (articleHeading || hasArticleBody) parts.push(section(`
+      ${articleHeading ? h2(esc(articleHeading)) : ''}
+      ${hasArticleBody ? articleBodyHtml : ''}`));
+
     // Celebrations
     const cards = [
       ['New CEBS graduates', emailRich(f('cebsGraduates'))],
